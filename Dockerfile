@@ -92,5 +92,3 @@ RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev
 
 # RUN fix-permissions $CONDA_DIR $HOME
 USER $NB_USER
-
-#ENTRYPOINT ["/usr/local/bin/tini", "--"]
