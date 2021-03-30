@@ -1,0 +1,101 @@
+gene_ID	genome	KO_ID	KO_annotation
+1	CC9311	K02338	DPO3B; DNA polymerase III subunit beta [EC:2.7.7.7]
+2	CC9311	NA	NA
+3	CC9311	K01952	purL; phosphoribosylformylglycinamidine synthase [EC:6.3.5.3]
+4	CC9311	K00764	purF; amidophosphoribosyltransferase [EC:2.4.2.14]
+5	CC9311	K02469	gyrA; DNA gyrase subunit A [EC:5.99.1.3]
+6	CC9311	NA	NA
+7	CC9311	K18979	queG; epoxyqueuosine reductase [EC:1.17.99.6]
+8	CC9311	NA	NA
+9	CC9311	NA	NA
+10	CC9311	K03625	nusB; N utilization substance protein B
+11	CC9311	K03110	ftsY; fused signal recognition particle receptor
+12	CC9311	K07315	rsbU_P; phosphoserine phosphatase RsbU/P [EC:3.1.3.3]
+13	CC9311	K01755	argH; argininosuccinate lyase [EC:4.3.2.1]
+14	CC9311	NA	NA
+15	CC9311	K05539	dusA; tRNA-dihydrouridine synthase A [EC:1.-.-.-]
+16	CC9311	K07305	msrB; peptide-methionine (R)-S-oxide reductase [EC:1.8.4.12]
+17	CC9311	K07007	uncharacterized protein
+18	CC9311	NA	NA
+19	CC9311	K02653	pilC; type IV pilus assembly protein PilC
+20	CC9311	K02669	pilT; twitching motility protein PilT
+21	GEYO	NA	NA
+22	GEYO	K02637	petD; cytochrome b6-f complex subunit 4
+23	GEYO	K02635	petB; cytochrome b6
+24	GEYO	K03797	E3.4.21.102; carboxyl-terminal processing protease [EC:3.4.21.102]
+25	GEYO	K06885	uncharacterized protein
+26	GEYO	K03610	minC; septum site-determining protein MinC
+27	GEYO	K03609	minD; septum site-determining protein MinD
+28	GEYO	K03608	minE; cell division topological specificity factor
+29	GEYO	NA	NA
+30	GEYO	NA	NA
+31	GEYO	K07566	tsaC; L-threonylcarbamoyladenylate synthase [EC:2.7.7.87]
+32	GEYO	K02493	hemK; release factor glutamine methyltransferase [EC:2.1.1.297]
+33	GEYO	K04096	smf; DNA processing protein
+34	GEYO	K04096	smf; DNA processing protein
+35	GEYO	K07107	ybgC; acyl-CoA thioester hydrolase [EC:3.1.2.-]
+36	GEYO	NA	NA
+37	GEYO	K02714	psbM; photosystem II PsbM protein
+38	GEYO	NA	NA
+39	GEYO	K02704	psbB; photosystem II CP47 chlorophyll apoprotein
+40	GEYO	K02718	psbT; photosystem II PsbT protein
+41	N32	NA	NA
+42	N32	NA	NA
+43	N32	NA	NA
+44	N32	NA	NA
+45	N32	NA	NA
+46	N32	NA	NA
+47	N32	K00721	DPM1; dolichol-phosphate mannosyltransferase [EC:2.4.1.83]
+48	N32	NA	NA
+49	N32	NA	NA
+50	N32	NA	NA
+51	N32	K07336	PKHD-type hydroxylase [EC:1.14.11.-]
+52	N32	K02012	afuA; iron(III) transport system substrate-binding protein
+53	N32	NA	NA
+54	N32	K02639	petF; ferredoxin
+55	N32	NA	NA
+56	N32	NA	NA
+57	N32	K00384	trxB; thioredoxin reductase (NADPH) [EC:1.8.1.9]
+58	N32	K03839	fldA; flavodoxin I
+59	N32	NA	NA
+60	N32	NA	NA
+61	RCC307	K02338	DPO3B; DNA polymerase III subunit beta [EC:2.7.7.7]
+62	RCC307	NA	NA
+63	RCC307	K01952	purL; phosphoribosylformylglycinamidine synthase [EC:6.3.5.3]
+64	RCC307	K00764	purF; amidophosphoribosyltransferase [EC:2.4.2.14]
+65	RCC307	K02469	gyrA; DNA gyrase subunit A [EC:5.99.1.3]
+66	RCC307	NA	NA
+67	RCC307	K18979	queG; epoxyqueuosine reductase [EC:1.17.99.6]
+68	RCC307	NA	NA
+69	RCC307	NA	NA
+70	RCC307	K03625	nusB; N utilization substance protein B
+71	RCC307	K03110	ftsY; fused signal recognition particle receptor
+72	RCC307	K07315	rsbU_P; phosphoserine phosphatase RsbU/P [EC:3.1.3.3]
+73	RCC307	K01755	argH; argininosuccinate lyase [EC:4.3.2.1]
+74	RCC307	NA	NA
+75	RCC307	K05539	dusA; tRNA-dihydrouridine synthase A [EC:1.-.-.-]
+76	RCC307	K07305	msrB; peptide-methionine (R)-S-oxide reductase [EC:1.8.4.12]
+77	RCC307	K07007	uncharacterized protein
+78	RCC307	K02653	pilC; type IV pilus assembly protein PilC
+79	RCC307	K02669	pilT; twitching motility protein PilT
+80	RCC307	K02652	pilB; type IV pilus assembly protein PilB
+81	UW179A	NA	NA
+82	UW179A	K02705	psbC; photosystem II CP43 chlorophyll apoprotein
+83	UW179A	NA	NA
+84	UW179A	NA	NA
+85	UW179A	NA	NA
+86	UW179A	K03768	PPIB; peptidyl-prolyl cis-trans isomerase B (cyclophilin B) [EC:5.2.1.8]
+87	UW179A	K01653	E2.2.1.6S; acetolactate synthase I/III small subunit [EC:2.2.1.6]
+88	UW179A	NA	NA
+89	UW179A	K00555	TRMT1; tRNA (guanine26-N2/guanine27-N2)-dimethyltransferase [EC:2.1.1.215 2.1.1.216]
+90	UW179A	K02643	petM; cytochrome b6-f complex subunit 7
+91	UW179A	NA	NA
+92	UW179A	NA	NA
+93	UW179A	NA	NA
+94	UW179A	K06181	rluE; 23S rRNA pseudouridine2457 synthase [EC:5.4.99.20]
+95	UW179A	NA	NA
+96	UW179A	K02518	infA; translation initiation factor IF-1
+97	UW179A	K00384	trxB; thioredoxin reductase (NADPH) [EC:1.8.1.9]
+98	UW179A	NA	NA
+99	UW179A	NA	NA
+100	UW179A	NA	NA
