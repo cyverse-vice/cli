@@ -81,7 +81,8 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     python-requests \
     software-properties-common \
-    wget 
+    wget \
+    curl
 
 # Install iCommands
 RUN wget https://files.renci.org/pub/irods/releases/4.1.10/ubuntu14/irods-icommands-4.1.10-ubuntu14-x86_64.deb && dpkg -i *.deb
