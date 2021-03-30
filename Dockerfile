@@ -1,6 +1,12 @@
 # Ubuntu 18.04 (Bionic) image with Miniconda
 FROM ubuntu:bionic-20180426@sha256:c8c275751219dadad8fa56b3ac41ca6cb22219ff117ca98fe82b42f24e1ba64e
-LABEL maintainer="Ratio"
+
+LABEL org.label-schema.name="CyVerse VICE WebShell" \
+      org.label-schema.description="Built from tiniconda" \
+      org.label-schema.url="https://cyverse.org" \
+      org.label-schema.vcs-url="e.g. https://github.com/sateeshperi/vice_bioinfo" \
+      org.label-schema.vendor="CyVerse" \
+      org.label-schema.schema-version="1.0.0"
 
 USER root
 
@@ -59,8 +65,6 @@ RUN min-apt wget && \
     mv tini /usr/local/bin/tini && \
     chmod +x /usr/local/bin/tini && \
     purge-apt wget
-
-
 
 # Install a few dependencies for iCommands, text editing, and monitoring instances
 RUN apt-get update && apt-get install -y \
