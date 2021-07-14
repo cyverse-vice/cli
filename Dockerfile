@@ -1,9 +1,9 @@
 FROM continuumio/miniconda3:4.9.2
 
 LABEL org.label-schema.name="CyVerse VICE WebShell" \
-      org.label-schema.description="Built from tiniconda" \
+      org.label-schema.description="Built from MiniConda3" \
       org.label-schema.url="https://cyverse.org" \
-      org.label-schema.vcs-url="e.g. https://github.com/tyson-swetnam/vice_bioinfo" \
+      org.label-schema.vcs-url="e.g. https://github.com/tyson-swetnam/vice_cli" \
       org.label-schema.vendor="CyVerse" \
       org.label-schema.schema-version="1.0.0"
 
@@ -33,12 +33,6 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - 
     ./libssl1.0.0_1.0.2n-1ubuntu5.6_amd64.deb
 
 RUN apt install -y irods-icommands
-
-# Install CyberDuck CLI
-RUN echo -e "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" | tee /etc/apt/sources.list.d/cyberduck.list > /dev/null && \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
-apt-get update && \
-apt-get install duck
 
 # install ttyd
 RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev && \
