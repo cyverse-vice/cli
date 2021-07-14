@@ -34,6 +34,9 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - 
 
 RUN apt install -y irods-icommands
 
+# Install Go
+RUN wget -c https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+
 # install ttyd
 RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev && \
     git clone https://github.com/tsl0922/ttyd.git && \
@@ -43,11 +46,28 @@ RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev
 
 RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf /var/lib/apt/lists/*
 
-# RUN fix-permissions $CONDA_DIR $HOME
-USER $NB_USER
+# Add sudo to user
+RUN adduser --disabled-password --gecos "VICE_User" --uid 1000 user
+# RUN apt-get update && apt-get install -y sudo
+# RUN usermod -aG sudo user
+# RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+RUN chown -R user:user /opt/conda
+
+USER user
+
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+
+# set path for Go
+ENV PATH=$PATH:/usr/local/go/bin 
 
 EXPOSE 7681
-WORKDIR /root
+
+WORKDIR /home/user
+
+# add iRODS iCommands to user profile as JSON
+RUN mkdir /home/user/.irods && echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | tee  > /home/user/.irods/irods_environment.json
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["ttyd", "bash"]
