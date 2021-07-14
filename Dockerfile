@@ -1,91 +1,44 @@
-# Ubuntu 18.04 (Bionic) image with Miniconda
-FROM ubuntu:bionic-20180426@sha256:c8c275751219dadad8fa56b3ac41ca6cb22219ff117ca98fe82b42f24e1ba64e
+FROM continuumio/miniconda3:4.9.2
 
 LABEL org.label-schema.name="CyVerse VICE WebShell" \
       org.label-schema.description="Built from tiniconda" \
       org.label-schema.url="https://cyverse.org" \
-      org.label-schema.vcs-url="e.g. https://github.com/sateeshperi/vice_bioinfo" \
+      org.label-schema.vcs-url="e.g. https://github.com/tyson-swetnam/vice_bioinfo" \
       org.label-schema.vendor="CyVerse" \
       org.label-schema.schema-version="1.0.0"
 
 USER root
 
-# Copy useful "minimal" commands from util
-COPY util/* /usr/local/bin/
-RUN chmod +x /usr/local/bin/*
-
-# Install OS dependencies to be kept in
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get -yq dist-upgrade && min-apt \
-    ca-certificates \
-    locales \
-    sudo && \
-    \
-    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
-
-# Configure Miniconda environment
-ENV MINICONDA_VERSION=4.5.1 \
-    MINICONDA_HASH=0c28787e3126238df24c5d4858bd0744 \
-    CONDA_DIR=/opt/conda \
-    SHELL=/bin/bash \
-    NB_USER=jovyan \
-    NB_UID=1000 \
-    NB_GID=100 \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
-ENV PATH=$CONDA_DIR/bin:$PATH \
-    HOME=/home/$NB_USER
-
-# Add Python user to 'users' group
-RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
-    mkdir -p $CONDA_DIR && \
-    chown $NB_USER:$NB_GID $CONDA_DIR && \
-    chmod g+w /etc/passwd /etc/group && \
-    # Setup work directory for backward-compatibility
-    mkdir /home/$NB_USER/work && \
-    fix-permissions $CONDA_DIR $HOME
-
-# Install Miniconda, configure, cleanup, fix permissions
-RUN min-apt wget && \
-    cd /tmp && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    echo "${MINICONDA_HASH} *Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
-    /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
-    rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    conda config --system --append channels conda-forge && \
-    conda config --system --set auto_update_conda false && \
-    conda config --system --set show_channel_urls true && \
-    clean-conda && \
-    fix-permissions $CONDA_DIR $HOME && \
-    # Install tini
-    wget --quiet https://github.com/krallin/tini/releases/download/v0.18.0/tini && \
-    echo "12D20136605531B09A2C2DAC02CCEE85E1B874EB322EF6BAF7561CD93F93C855 *tini" | sha256sum -c - && \
-    mv tini /usr/local/bin/tini && \
-    chmod +x /usr/local/bin/tini && \
-    purge-apt wget
-
+ENV TZ=US/Phoenix
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+    
 # Install a few dependencies for iCommands, text editing, and monitoring instances
-RUN apt-get update && apt-get install -y \
-    apt-transport-https \
-    gcc \
-    gnupg \
-    htop \
-    less \
-    libfuse2 \
-    libpq-dev \
-    libssl1.0 \
-    lsb \
-    nano \
-    nodejs \
-    python-requests \
-    software-properties-common \
-    wget \
-    curl
+RUN apt-get update && apt-get install -y lsb-release wget apt-transport-https curl supervisor nginx gnupg2 libfuse2 nano htop gcc less nodejs software-properties-common apt-utils glances
 
-# Install iCommands
-RUN wget https://files.renci.org/pub/irods/releases/4.1.10/ubuntu14/irods-icommands-4.1.10-ubuntu14-x86_64.deb && dpkg -i *.deb
+RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \
+    echo "deb [arch=amd64] https://packages.irods.org/apt/ bionic main" > /etc/apt/sources.list.d/renci-irods.list && \
+    apt-get update && \
+    wget -c \
+    http://security.ubuntu.com/ubuntu/pool/main/p/python-urllib3/python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+    http://security.ubuntu.com/ubuntu/pool/main/r/requests/python-requests_2.18.4-2ubuntu0.1_all.deb \
+    http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.6_amd64.deb && \
+    apt install -y \
+    ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+    ./python-requests_2.18.4-2ubuntu0.1_all.deb \
+    ./libssl1.0.0_1.0.2n-1ubuntu5.6_amd64.deb && \
+    rm -rf \
+    ./python-urllib3_1.22-1ubuntu0.18.04.2_all.deb \
+    ./python-requests_2.18.4-2ubuntu0.1_all.deb \
+    ./libssl1.0.0_1.0.2n-1ubuntu5.6_amd64.deb
+
+RUN apt install -y irods-icommands
+
+# Install CyberDuck CLI
+RUN echo -e "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" | tee /etc/apt/sources.list.d/cyberduck.list > /dev/null && \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
+apt-get update && \
+apt-get install duck
 
 # install ttyd
 RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev && \
@@ -94,6 +47,13 @@ RUN apt-get install -y build-essential cmake git libjson-c-dev libwebsockets-dev
     cmake .. && \
     make && make install
 
+RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf /var/lib/apt/lists/*
 
 # RUN fix-permissions $CONDA_DIR $HOME
 USER $NB_USER
+
+EXPOSE 7681
+WORKDIR /root
+
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["ttyd", "bash"]
