@@ -66,8 +66,11 @@ EXPOSE 7681
 
 WORKDIR /home/user
 
+COPY entry.sh /bin
+
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods && echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | tee  > /home/user/.irods/irods_environment.json
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["bash", "/bin/entry.sh"]
+
 CMD ["ttyd", "bash"]
