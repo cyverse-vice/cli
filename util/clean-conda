@@ -1,5 +1,0 @@
-#!/bin/sh
-
-rm -rf $CONDA_DIR/pkgs/*
-conda clean -tipsy
-clean-pyc-files $CONDA_DIR

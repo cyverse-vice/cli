@@ -36,7 +36,7 @@ RUN apt-get install -y curl grep sed dpkg && \
     apt-get clean
 
 # Install a few dependencies for iCommands, text editing, and monitoring instances
-RUN apt-get update && apt-get install -y lsb-release wget apt-transport-https curl supervisor nginx gnupg2 libfuse2 gcc less nodejs software-properties-common apt-utils glances htop vim emacs
+RUN apt-get update && apt-get install -y lsb-release wget apt-transport-https curl supervisor nginx gnupg2 libfuse2 gcc less nodejs software-properties-common apt-utils glances htop vim emacs nano 
 
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \
     echo "deb [arch=amd64] https://packages.irods.org/apt/ bionic main" > /etc/apt/sources.list.d/renci-irods.list && \
@@ -66,7 +66,7 @@ RUN git clone https://github.com/tsl0922/ttyd.git && \
     cmake .. && \
     make && make install
 
-# Install OhMyZSH shell
+# Install ZSH shell
 RUN apt-get install -y zsh 
 
 # Add sudo to user
@@ -79,21 +79,27 @@ RUN chown -R user:user /opt/conda
 
 USER user
 
+# Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# add conda path to bash
+# add conda path when running BASH
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-# add conda path to zsh
+# add conda path when running ZSH
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
     echo "conda activate base" >> ~/.zshrc
 
 # set path for Go
 ENV PATH=$PATH:/usr/local/go/bin 
+
+# set shell as zsh
 ENV SHELL=zsh
+
+# open port 7681 for ttyd
 EXPOSE 7681
 
+#set working directory
 WORKDIR /home/user
 
 COPY entry.sh /bin
