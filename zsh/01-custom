@@ -1,0 +1,10 @@
+#!/bin/zsh
+MSG="CyVerse"
+figlet $MSG | lolcat;
+echo "\n";
+neofetch
+echo
+echo "Welcome to the Discovery Environment Cloud CLI. Your CyVerse username is:" $IPLANT_USER
+echo
+echo "To initiate iCommands, type 'iinit', followed by your CyVerse password"
+echo "Need Help? Read our documentation https://learning.cyverse.org"

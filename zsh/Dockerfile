@@ -106,10 +106,18 @@ RUN apt-get update && \
 # getting locales error
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
+# update terminal message
+RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune -y
+ENV PATH=${PATH}:/usr/games
+ENV LC_ALL=C
+COPY 01-custom /etc/motd
+RUN chmod +x /etc/motd
+
 USER user
 
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
 
 # set path for Go
 ENV PATH=$PATH:/usr/local/go/bin 
