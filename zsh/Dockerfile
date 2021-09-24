@@ -1,9 +1,9 @@
 FROM ubuntu:20.04
 
 LABEL org.label-schema.name="CyVerse VICE WebShell" \
-      org.label-schema.description="Built from MiniConda3" \
+      org.label-schema.description="Built from Ubuntu 20.04 w/ MiniConda3" \
       org.label-schema.url="https://cyverse.org" \
-      org.label-schema.vcs-url="e.g. https://github.com/tyson-swetnam/vice_cli" \
+      org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
       org.label-schema.vendor="CyVerse" \
       org.label-schema.schema-version="1.0.0"
 
@@ -52,7 +52,6 @@ RUN apt-get update && \
     rm tini.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
 
 # Install a few dependencies for iCommands, text editing, and monitoring instances
 RUN apt-get update && \
@@ -109,7 +108,6 @@ RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_
 # update terminal message
 RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune -y
 ENV PATH=${PATH}:/usr/games
-ENV LC_ALL=C
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
@@ -136,6 +134,7 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
+
 ENTRYPOINT ["zsh", "/bin/entry.sh"]
 
 CMD ["ttyd", "zsh"]
