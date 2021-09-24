@@ -103,6 +103,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# getting locales error
+RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
+
 USER user
 
 # Install OhMyZSH theme
