@@ -33,9 +33,21 @@ jobs:
           registry: harbor.cyverse.org
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
-      
-      - name: Build and push latest
-        id: docker_build_latest
+
+      - name: Build and push bash latest
+        id: docker_build_bash
+        uses: docker/build-push-action@v2.6.1
+        with:
+          context: latest 
+          file: bash/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: harbor.cyverse.org/vice/cli/bash:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          
+      - name: Build and push zsh latest
+        id: docker_build_zsh
         uses: docker/build-push-action@v2.6.1
         with:
           context: latest 
