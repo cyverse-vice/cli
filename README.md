@@ -24,8 +24,8 @@ Monitors include `top`, `htop`, & `glances`
 To build and run the container locally:
 
 ```
-git clone https://github.com/tyson-swetnam/vice_cli.git
-cd vice_cli
+git clone https://github.com/cyverse-vice/cli.git
+cd cli/zsh
 docker build -t cli:focal-zsh .
 docker run -it -p 7681:7861 cli:focal-zsh
 ```
@@ -35,5 +35,5 @@ To port and build your own version of this container, you can use the hosted ver
 To your own Dockerfile, add:
 
 ```
-FROM harbor.cyverse.org/vice/cli:focal-zsh
+FROM harbor.cyverse.org/vice/cli/zsh:latest
 ```
