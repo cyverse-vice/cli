@@ -38,7 +38,7 @@ jobs:
         id: docker_build_bash
         uses: docker/build-push-action@v2.6.1
         with:
-          context: latest 
+          context: bash 
           file: bash/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
@@ -50,7 +50,7 @@ jobs:
         id: docker_build_zsh
         uses: docker/build-push-action@v2.6.1
         with:
-          context: latest 
+          context: zsh 
           file: zsh/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
