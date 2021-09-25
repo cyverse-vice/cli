@@ -135,6 +135,9 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
 
+# source .zshrc for conda to set shell for user to zsh
+RUN source ~/.zshrc
+
 ENTRYPOINT ["zsh", "/bin/entry.sh"]
 
 CMD ["ttyd", "zsh"]
