@@ -139,6 +139,6 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
 
-ENTRYPOINT ["zsh", "/bin/entry.sh"]
+ENTRYPOINT ["source", "~/.zshrc", "&&", "zsh", "/bin/entry.sh"]
 
-CMD ["ttyd", "zsh"]
+CMD ["source", "~/.zshrc", "&&", "ttyd", "zsh"]
