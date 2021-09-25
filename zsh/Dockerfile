@@ -14,9 +14,13 @@ RUN apt-get update && \
     apt-get install -y sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+    
+ARG LOCAL_USER=user
+ARG PRIV_CMDS='/bin/ch*,/bin/cat,/bin/gunzip,/bin/tar,/bin/mkdir,/bin/ps,/bin/mv,/bin/cp,/usr/bin/apt*,/usr/bin/pip*,/bin/yum'
+
 RUN adduser --disabled-password --gecos "VICE_User" --uid 1000 user  && \
     usermod -aG sudo user && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo "$LOCAL_USER ALL=NOPASSWD: $PRIV_CMDS" >> /etc/sudoers
 
 # Install MiniConda and Tini
 ENV TZ America/Phoenix
