@@ -42,10 +42,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    echo "conda activate base" >> ~/.zshrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.bashrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.zshrc && \
     chown -R user:user /opt/conda
 
 RUN apt-get update && \
@@ -115,6 +113,7 @@ ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
+# ready to set user 
 USER user
 
 # Install OhMyZSH theme
@@ -133,12 +132,13 @@ EXPOSE 7681
 #set working directory
 WORKDIR /home/user
 
+# changes tmux layout while running
 COPY entry.sh /bin
 RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
 
-ENTRYPOINT ["source", "~/.zshrc", "&&", "zsh", "/bin/entry.sh"]
+ENTRYPOINT ["zsh", "/bin/entry.sh"]
 
-CMD ["source", "~/.zshrc", "&&", "ttyd", "zsh"]
+CMD ["ttyd", "zsh"]
