@@ -113,12 +113,20 @@ ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
+
+# Install CyberDuck CLI
+RUN echo "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" > /etc/apt/sources.list.d/cyberduck.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
+    apt-get update && \
+    apt-get install  duck
+
 # ready to set user 
 USER user
 
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
+
 
 # set path for Go
 ENV PATH=$PATH:/usr/local/go/bin 
