@@ -1,9 +1,9 @@
 FROM ubuntu:20.04
 
 LABEL org.label-schema.name="CyVerse VICE WebShell" \
-      org.label-schema.description="Built from MiniConda3" \
+      org.label-schema.description="Built from Ubuntu 20.04 w/ MiniConda3" \
       org.label-schema.url="https://cyverse.org" \
-      org.label-schema.vcs-url="e.g. https://github.com/tyson-swetnam/vice_cli" \
+      org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
       org.label-schema.vendor="CyVerse" \
       org.label-schema.schema-version="1.0.0"
 
@@ -14,9 +14,13 @@ RUN apt-get update && \
     apt-get install -y sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+    
+ARG LOCAL_USER=user
+ARG PRIV_CMDS='/bin/ch*,/bin/cat,/bin/gunzip,/bin/tar,/bin/mkdir,/bin/ps,/bin/mv,/bin/cp,/usr/bin/apt*,/usr/bin/pip*,/bin/yum'
+
 RUN adduser --disabled-password --gecos "VICE_User" --uid 1000 user  && \
     usermod -aG sudo user && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo "$LOCAL_USER ALL=NOPASSWD: $PRIV_CMDS" >> /etc/sudoers
 
 # Install MiniConda and Tini
 ENV TZ America/Phoenix
@@ -38,10 +42,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.zshrc && \
-    echo "conda activate base" >> ~/.zshrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.bashrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.zshrc && \
     chown -R user:user /opt/conda
 
 RUN apt-get update && \
@@ -52,7 +54,6 @@ RUN apt-get update && \
     rm tini.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
 
 # Install a few dependencies for iCommands, text editing, and monitoring instances
 RUN apt-get update && \
@@ -106,10 +107,26 @@ RUN apt-get update && \
 # getting locales error
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
+# update terminal message
+RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune -y
+ENV PATH=${PATH}:/usr/games
+COPY 01-custom /etc/motd
+RUN chmod +x /etc/motd
+
+
+# Install CyberDuck CLI
+RUN echo "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" > /etc/apt/sources.list.d/cyberduck.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
+    apt-get update && \
+    apt-get install  duck
+
+# ready to set user 
 USER user
 
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
+
 
 # set path for Go
 ENV PATH=$PATH:/usr/local/go/bin 
@@ -123,11 +140,13 @@ EXPOSE 7681
 #set working directory
 WORKDIR /home/user
 
+# changes tmux layout while running
 COPY entry.sh /bin
 RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
+
 ENTRYPOINT ["bash", "/bin/entry.sh"]
 
 CMD ["ttyd", "bash"]
