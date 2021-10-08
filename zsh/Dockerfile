@@ -133,6 +133,7 @@ ENV PATH=$PATH:/usr/local/go/bin
 
 # set shell as zsh
 ENV SHELL=zsh
+ENV TERM=linux
 
 # open port 7681 for ttyd
 EXPOSE 7681
