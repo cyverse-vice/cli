@@ -4,7 +4,7 @@ figlet $MSG | lolcat;
 echo "\n";
 neofetch
 echo
-echo "Welcome to the Discovery Environment's Cloud CLI." 
+echo "Welcome to the Cloud Shell." 
 echo "Your CyVerse Username:" $IPLANT_USER
 echo
 echo "To connect iCommands, type 'iinit'"
