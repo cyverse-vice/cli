@@ -93,6 +93,10 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - 
 # Install Go
 RUN wget -q -c https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
 
+# Install Rust
+RUN apt-get update && \
+    apt-get install -y cargo rustc
+
 # install ttyd
 RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64" > ttyd && \
     chmod a+x ttyd && \
@@ -125,12 +129,14 @@ USER user
 
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Set message of the day on terminal start for both bash and zsh
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
-
-# set path for Go
-ENV PATH=$PATH:/usr/local/go/bin 
+# set path for Go and Rust
+ENV PATH=$PATH:/usr/local/go/bin:/home/user/.cargo/bin
+ENV rustup completions zsh > ~/.zfunc/_rustup
 
 # set shell as zsh
 ENV SHELL=zsh
