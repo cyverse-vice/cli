@@ -1,10 +1,11 @@
 #!/bin/bash
 MSG="CyVerse VICE"
 figlet $MSG | lolcat;
-echo "\n";
+echo
 neofetch
 echo
-echo "Welcome to the Cloud Shell." 
+echo "Welcome to the Cloud Shell."
+echo 
 echo "Your CyVerse Username:" $IPLANT_USER
 echo
 echo "To connect iCommands, type 'iinit'"

@@ -108,7 +108,7 @@ RUN apt-get update && \
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
 # update terminal message
-RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune -y
+RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
@@ -126,6 +126,7 @@ USER user
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
+RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
 
 # set path for Go

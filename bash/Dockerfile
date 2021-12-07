@@ -107,18 +107,17 @@ RUN apt-get update && \
 # getting locales error
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
-# update terminal message
-RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune -y
-ENV PATH=${PATH}:/usr/games
-COPY 01-custom /etc/motd
-RUN chmod +x /etc/motd
-
-
 # Install CyberDuck CLI
 RUN echo "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" > /etc/apt/sources.list.d/cyberduck.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
     apt-get update && \
     apt-get install  duck
+
+# update terminal message
+RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
+ENV PATH=${PATH}:/usr/games
+COPY 01-custom /etc/motd
+RUN chmod +x /etc/motd
 
 # ready to set user 
 USER user
@@ -126,14 +125,14 @@ USER user
 # Install OhMyZSH theme
 RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
-
+RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
 # set path for Go
 ENV PATH=$PATH:/usr/local/go/bin 
 
-# set shell as bash
+# set shell as bash and terminal as linux
 ENV SHELL=bash
-ENV TERM=linux
+ENV TERM=xterm
 
 # open port 7681 for ttyd
 EXPOSE 7681
