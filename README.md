@@ -41,5 +41,5 @@ To port and build your own version of this container, you can use the hosted ver
 To your own Dockerfile, add:
 
 ```
-FROM harbor.cyverse.org/vice/cli/zsh:latest
+FROM harbor.cyverse.org/vice/cli/bash:latest
 ```
