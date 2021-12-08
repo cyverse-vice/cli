@@ -34,7 +34,7 @@ docker run -it -p 7681:7861 cli:focal-zsh
 To test locally
 
 ```
-docker run -it --rm -p 7681:7681 harbor.cyverse.org/cli/bash:latest
+docker run -it --rm -p 7681:7681 harbor.cyverse.org/vice/cli/bash:latest
 ```
 To port and build your own version of this container, you can use the hosted version from [CyVerse Harbor](https://harbor.cyverse.org/harbor/projects/17/repositories/cli)
 
