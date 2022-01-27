@@ -156,4 +156,4 @@ RUN mkdir /home/user/.irods
 
 ENTRYPOINT ["ttyd", "bash", "/bin/entry.sh"]
 
-CMD ["ttyd", "bash", "/bin/entry.sh"]
+CMD ["ttyd", "bash"]
