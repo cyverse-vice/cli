@@ -33,7 +33,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 RUN apt-get update && \
     apt-get install -y wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion \
+    gettext-base git mercurial subversion \
     tmux && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
