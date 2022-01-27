@@ -6,10 +6,10 @@
 
 Launch in CyVerse with a verified user account (free):
 
-quick launch | size | 
------------- | ---- | 
-<a href="" target="_blank"><img src="https://img.shields.io/badge/Ubuntu%2020.04-bash-red?style=plastic&logo=ubuntu"></a> | 
-<a href="" target="_blank"><img src="https://img.shields.io/badge/Ubuntu%2020.04-zsh-teal?style=plastic&logo=ubuntu"></a> | 
+| quick launch |
+|--------------| 
+<a href="https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/launch" target="_blank"><img src="https://img.shields.io/badge/Ubuntu%2020.04-bash-red?style=plastic&logo=ubuntu"></a> | 
+
 
 Shell with BASH and ZSH command line interface (CLI). Intended for running shell commands on [CyVerse VICE](https://learning.cyverse.org/projects/vice/en/latest/).
 
