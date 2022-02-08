@@ -6,6 +6,9 @@
 
 Launch in CyVerse with a verified user account (free):
 
+[![!Harbor](https://github.com/cyverse-vice/cli/actions/workflows/harbor.yml/badge.svg)](https://github.com/cyverse-vice/cli/actions) ![GitHub commits since tagged version](https://img.shields.io/github/commits-since/cyverse-vice/cli/latest/main?style=flat-square) 
+
+
 | quick launch |
 |--------------| 
 <a href="https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/launch" target="_blank"><img src="https://img.shields.io/badge/Ubuntu%2020.04-bash-red?style=plastic&logo=ubuntu"></a> | 
