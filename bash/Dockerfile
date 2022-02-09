@@ -117,6 +117,12 @@ RUN echo "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" > /etc
     apt-get update && \
     apt-get install  duck
 
+# Install GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > tee /etc/apt/sources.list.d/github-cli.list && \
+    apt update && \
+    apt install gh
+
 # update terminal message
 RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
