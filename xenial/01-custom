@@ -1,0 +1,16 @@
+#!/bin/bash
+MSG="CyVerse VICE"
+figlet $MSG | lolcat;
+echo
+neofetch
+echo
+echo "Welcome to the Cloud Shell."
+echo 
+echo "Your CyVerse Username:" $IPLANT_USER
+echo
+echo "To connect iCommands, type 'iinit'"
+echo
+echo "Want to know more? Learning Center Documentation: https://learning.cyverse.org"
+echo 
+echo "About this Tool & App: https://github.com/cyverse-vice/cli"
+echo
