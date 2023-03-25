@@ -12,14 +12,14 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.0
       
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2.5.0
       
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3.3.1
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -28,7 +28,7 @@ jobs:
       
       - name: Login to harbor
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2.1.0
         with:
           registry: harbor.cyverse.org
           username: ${{ secrets.HARBOR_USERNAME }}
@@ -36,25 +36,13 @@ jobs:
 
       - name: Build and push bash latest
         id: docker_build_bash
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v4.0.0
         with:
           context: bash 
           file: bash/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: harbor.cyverse.org/vice/cli/bash:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          
-      - name: Build and push zsh latest
-        id: docker_build_zsh
-        uses: docker/build-push-action@v2.6.1
-        with:
-          context: zsh 
-          file: zsh/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: harbor.cyverse.org/vice/cli/zsh:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
      
