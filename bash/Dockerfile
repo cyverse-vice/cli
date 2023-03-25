@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
       org.label-schema.description="Built from Ubuntu 22.04 w/ MiniConda3" \
