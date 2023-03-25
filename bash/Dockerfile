@@ -1,7 +1,7 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
-LABEL org.label-schema.name="CyVerse VICE WebShell" \
-      org.label-schema.description="Built from Ubuntu 20.04 w/ MiniConda3" \
+LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
+      org.label-schema.description="Built from Ubuntu 22.04 w/ MiniConda3" \
       org.label-schema.url="https://cyverse.org" \
       org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
       org.label-schema.vendor="CyVerse" \
@@ -54,15 +54,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install a few dependencies for iCommands, text editing, and monitoring instances
-RUN apt update && \
-    apt install -y lsb-release apt-transport-https curl libfreetype6-dev pkg-config libx11-dev gcc less software-properties-common apt-utils glances htop nano rclone
-
-RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \
-    echo "deb [arch=amd64] https://packages.irods.org/apt/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/renci-irods.list && \
-    apt-get update && \
-    apt install -y irods-icommands 
-
 # Install Go
 RUN wget -q -c https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
 
@@ -80,17 +71,11 @@ RUN apt-get update && \
 # getting locales error
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
-# Install CyberDuck CLI
-RUN echo "deb https://s3.amazonaws.com/repo.deb.cyberduck.io stable main" > /etc/apt/sources.list.d/cyberduck.list && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FE7097963FEFBE72 && \
-    apt-get update && \
-    apt-get install  duck
-
-# Install GitHub CLI
-RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
-    apt update && \
-    apt install gh
+# Install GoCommands
+# https://learning.cyverse.org/ds/gocommands/
+RUN cd /usr/local/bin && \
+    curl -L -o gocmd.tar.gz https://github.com/cyverse/gocommands/releases/download/v0.6.3/gocmd-v0.6.3-linux-amd64.tar.gz && \
+    tar zxvf gocmd.tar.gz && rm gocmd.tar.gz
 
 # update terminal message
 RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
