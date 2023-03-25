@@ -10,7 +10,7 @@ echo "Your CyVerse Username is:" $IPLANT_USER
 echo
 echo "To transfer files to or from the Data Store use GoCommands, type 'gocmd help' for options"
 echo
-echo "Your personal folders and Community Released folders are also mounted to the working directory '/home/user/data-store/'"
+echo "Your personal folders and Community Released folders are also mounted to the directory '/data-store/'" 
 echo
 echo "Want to know more? Learning Center Documentation: https://learning.cyverse.org"
 echo 
