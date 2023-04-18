@@ -77,6 +77,14 @@ RUN cd /usr/local/bin && \
     curl -L -o gocmd.tar.gz https://github.com/cyverse/gocommands/releases/download/v0.6.3/gocmd-v0.6.3-linux-amd64.tar.gz && \
     tar zxvf gocmd.tar.gz && rm gocmd.tar.gz
 
+# Install GitHub CLI
+RUN type -p curl >/dev/null || (apt update && apt install curl -y) \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt update \
+    && apt install gh -y
+
 # update terminal message
 RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
