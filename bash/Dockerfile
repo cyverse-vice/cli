@@ -16,11 +16,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
     
 ARG LOCAL_USER=user
-ARG PRIV_CMDS='/bin/ch*,/bin/cat,/bin/gunzip,/bin/tar,/bin/mkdir,/bin/ps,/bin/mv,/bin/cp,/usr/bin/apt*,/usr/bin/pip*,/bin/yum'
 
-RUN adduser --disabled-password --gecos "VICE_User" --uid 1000 user  && \
-    usermod -aG sudo user && \
-    echo "$LOCAL_USER ALL=NOPASSWD: $PRIV_CMDS" >> /etc/sudoers
+RUN apt-get update && \
+    apt-get install -y sudo && \
+    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install MiniConda and Tini
 ENV TZ America/Phoenix
@@ -74,16 +74,8 @@ RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_
 # Install GoCommands
 # https://learning.cyverse.org/ds/gocommands/
 RUN cd /usr/local/bin && \
-    curl -L -o gocmd.tar.gz https://github.com/cyverse/gocommands/releases/download/v0.6.3/gocmd-v0.6.3-linux-amd64.tar.gz && \
-    tar zxvf gocmd.tar.gz && rm gocmd.tar.gz
-
-# Install GitHub CLI
-RUN type -p curl >/dev/null || (apt update && apt install curl -y) \
-    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-    && apt update \
-    && apt install gh -y
+    GOCMD_VER=$(curl -L -s https://raw.githubusercontent.com/cyverse/gocommands/main/VERSION.txt); \
+    curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
 
 # update terminal message
 RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
@@ -101,9 +93,8 @@ RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/t
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
-# set path for Go and Rust
-ENV PATH=$PATH:/usr/local/go/bin:/home/user/.cargo/bin
-ENV rustup completions bash > ~/.local/share/bash-completion/completions/rustup
+# set path for Go 
+ENV PATH=$PATH:/usr/local/go/bin
 
 # set shell as bash and terminal as linux
 ENV SHELL=bash
@@ -121,6 +112,9 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
+
+# install mamba
+RUN conda install -c conda-forge mamba
 
 ENTRYPOINT ["bash", "/bin/entry.sh"]
 
