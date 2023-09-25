@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM jupyter/minimal-notebook:latest
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
       org.label-schema.description="Built from Ubuntu 22.04 w/ MiniConda3" \
@@ -19,10 +19,10 @@ ARG LOCAL_USER=user
 
 RUN apt-get update && \
     apt-get install -y sudo && \
-    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     rm -rf /var/lib/apt/lists/*
 
-# Install MiniConda and Tini
+# Install Tini
 ENV TZ America/Phoenix
 ENV LANG=C.UTF-8 
 ENV LC_ALL "en_US.UTF-8"
@@ -37,11 +37,6 @@ RUN apt-get update && \
     tmux && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    chown -R 1000:1000 /opt/conda
 
 RUN apt-get update && \
     apt-get install -y curl grep sed dpkg && \
@@ -69,14 +64,12 @@ RUN cd /usr/local/bin && \
     curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
 
 # update terminal message
-RUN apt-get update && apt install neofetch figlet w3m-img imagemagick -y
+RUN apt-get update && apt install lolcneofetch figlet w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
-# ready to set user 
-RUN useradd -ms /bin/bash user
-USER user
+USER jovyan
 
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
 
@@ -94,23 +87,22 @@ ENV TERM=xterm
 EXPOSE 7681
 
 #set working directory
-WORKDIR /home/user
+WORKDIR /home/jovyan/data-store
 
 # changes tmux layout while running
 COPY entry.sh /bin
 RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
-RUN mkdir /home/user/.irods 
+RUN mkdir /home/jovyan/.irods 
 
 # activate base Python environment using mamba
-COPY environment.yml /home/user/ 
-RUN conda update -n base -c defaults conda
-RUN conda env create -f /home/user/environment.yml
+COPY environment.yml /home/jovyan/ 
+RUN mamba env create -f /home/jovyan/environment.yml
 
 # using ~/.bash_profile instead of ~/.bashrc for non-interactive tty (-it) containers
-RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.bash_profile && \
-    echo "conda activate geospatial" >> /home/user/.bash_profile
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile && \
+    echo "conda activate geospatial" >> /home/jovyan/.bash_profile
 
 ENTRYPOINT ["bash", "/bin/entry.sh"]
 

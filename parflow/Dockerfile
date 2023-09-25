@@ -6,7 +6,6 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
-    ln -fs /usr/share/zoneinfo/America/Phoenix /etc/localtime && \
     apt-get install -y tzdata && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt-get install -y \
@@ -51,7 +50,6 @@ run wget -q https://github.com/Unidata/netcdf-c/archive/v4.9.0.tar.gz && \
 #
 # NetCDF Fortran
 #
-WORKDIR /home/parflow
 run wget -q https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz && \ 
     tar -xf v4.5.4.tar.gz && \
     cd netcdf-fortran-4.5.4 && \
@@ -64,7 +62,6 @@ run wget -q https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz && \
 #
 # SILO
 #
-WORKDIR /home/parflow
 RUN wget -q https://github.com/LLNL/Silo/archive/refs/tags/4.10.2.tar.gz && \
     tar -xf 4.10.2.tar.gz && \
     cd Silo-4.10.2 && \
@@ -76,7 +73,6 @@ RUN wget -q https://github.com/LLNL/Silo/archive/refs/tags/4.10.2.tar.gz && \
 #
 # Hypre
 #
-WORKDIR /home/parflow
 RUN  wget -q https://github.com/hypre-space/hypre/archive/v2.26.0.tar.gz && \
    tar xf v2.26.0.tar.gz && \
    cd hypre-2.26.0/src && \
@@ -89,16 +85,14 @@ RUN  wget -q https://github.com/hypre-space/hypre/archive/v2.26.0.tar.gz && \
 # Parflow configure and build
 #-----------------------------------------------------------------------------
 
-USER user
-
 ENV PARFLOW_MPIEXEC_EXTRA_FLAGS "--mca mpi_yield_when_idle 1 --oversubscribe --allow-run-as-root"
 
 # Disable HWLOC warnings from showing up, confusing messages, this has been fixed in later OpenMPI versions
 ENV HWLOC_HIDE_ERRORS "2"
 
-WORKDIR /home/user/parflow
+WORKDIR /home/jovayn/parflow
 
-RUN git clone -b master --single-branch https://github.com/parflow/parflow.git parflow
+RUN git clone -b master --depth 1 --single-branch https://github.com/parflow/parflow.git parflow
 
 RUN mkdir -p build && \
     cd build && \
@@ -119,4 +113,7 @@ RUN mkdir -p build && \
      cd .. && \
      rm -fr parflow build
 
-ENTRYPOINT ["pfrun"]
+COPY 01-custom /etc/motd
+RUN chmod +x /etc/motd
+
+USER jovyan

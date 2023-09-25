@@ -1,0 +1,20 @@
+#!/bin/bash
+MSG="ParFlow"
+figlet $MSG | lolcat;
+echo
+neofetch
+echo
+echo "Welcome to the CyVerse Cloud Shell: ParFlow hydrologic model"
+echo 
+echo "Your CyVerse Username is:" $IPLANT_USER
+echo
+echo "To transfer files to or from the Data Store use GoCommands, type 'gocmd help' for options"
+echo
+echo "Your personal folders and Community Released folders are also mounted to the directory '/data-store/'" 
+echo 
+echo "About this CyVerse App: https://github.com/cyverse-vice/cli"
+echo
+echo "About the Parflow model: https://parflow.org/"
+echo
+echo "To run Parflow here type 'pfrun' or 'parflow' in the terminal"
+echo
