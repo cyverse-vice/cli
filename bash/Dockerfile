@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
       org.label-schema.description="Built from Ubuntu 22.04 w/ MiniConda3" \
@@ -40,11 +40,8 @@ RUN apt-get update && \
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.bashrc && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.zshrc && \
-    chown -R user:user /opt/conda
+    rm ~/miniconda.sh && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    chown -R 1000:1000 /opt/conda
 
 RUN apt-get update && \
     apt-get install -y curl grep sed dpkg && \
@@ -62,12 +59,6 @@ RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64
     chmod a+x ttyd && \
     mv ttyd /usr/local/bin/ttyd
 
-# Install ZSH shell
-RUN apt-get update && \
-    apt-get install -y zsh && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # getting locales error
 RUN apt-get clean && apt-get update && apt-get install locales && locale-gen en_US.UTF-8
 
@@ -78,19 +69,18 @@ RUN cd /usr/local/bin && \
     curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
 
 # update terminal message
-RUN apt-get update && apt install neofetch figlet lolcat cowsay fortune w3m-img imagemagick -y
+RUN apt-get update && apt install neofetch figlet w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 # ready to set user 
+RUN useradd -ms /bin/bash user
 USER user
 
-# Install OhMyZSH theme
-RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
 
 # Set message of the day on terminal start for both bash and zsh
-RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.zshrc
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
 # set path for Go 
@@ -113,8 +103,14 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/user/.irods 
 
-# install mamba
-RUN conda install -c conda-forge mamba
+# activate base Python environment using mamba
+COPY environment.yml /home/user/ 
+RUN conda update -n base -c defaults conda
+RUN conda env create -f /home/user/environment.yml
+
+# using ~/.bash_profile instead of ~/.bashrc for non-interactive tty (-it) containers
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/user/.bash_profile && \
+    echo "conda activate geospatial" >> /home/user/.bash_profile
 
 ENTRYPOINT ["bash", "/bin/entry.sh"]
 
