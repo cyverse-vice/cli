@@ -117,3 +117,7 @@ COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 USER jovyan
+
+ENTRYPOINT ["bash", "/bin/entry.sh"]
+
+CMD ["ttyd", "bash"]

@@ -64,7 +64,7 @@ RUN cd /usr/local/bin && \
     curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
 
 # update terminal message
-RUN apt-get update && apt install lolcneofetch figlet w3m-img imagemagick -y
+RUN apt-get update && apt install lolcat neofetch figlet w3m-img imagemagick -y
 ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
@@ -103,6 +103,8 @@ RUN mamba env create -f /home/jovyan/environment.yml
 # using ~/.bash_profile instead of ~/.bashrc for non-interactive tty (-it) containers
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile && \
     echo "conda activate geospatial" >> /home/jovyan/.bash_profile
+
+RUN sudo groupadd --gid 1000 jovyan
 
 ENTRYPOINT ["bash", "/bin/entry.sh"]
 
