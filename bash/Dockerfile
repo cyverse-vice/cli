@@ -69,6 +69,14 @@ ENV PATH=${PATH}:/usr/games
 COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
+# install git-credential-manager 
+RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb
+
+RUN sudo dpkg -i gcm-linux_amd64.2.5.0.deb
+
+# set the ENV for the credential type
+ENV GCM_CREDENTIAL_STORE=cache
+
 USER jovyan
 
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
