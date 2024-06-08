@@ -8,12 +8,6 @@ LABEL org.label-schema.name="CyVerse VICE CloudShell" \
       org.label-schema.schema-version="1.0.0"
 
 USER root
-
-# Add sudo to user
-RUN apt-get update && \
-    apt-get install -y sudo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
     
 ARG LOCAL_USER=kasm-user
 
@@ -22,25 +16,45 @@ RUN apt-get update && \
     echo "${LOCAL_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     rm -rf /var/lib/apt/lists/*
 
+# Install a few dependencies for goCommands, text editing, and monitoring instances
+RUN apt update && \
+    apt install -y apt-transport-https \
+                apt-utils \
+                curl \
+                figlet \
+                gcc \
+                glances \
+                htop \
+                imagemagick \
+                libfreetype6-dev \
+                less \
+                libx11-dev \
+                lolcat   \ 
+                neofetch \
+                lsb-release \
+                neofetch \
+                pkg-config \
+                software-properties-common \
+                nano \
+                w3m-img
+
 # Install GoCommands
 # https://learning.cyverse.org/ds/gocommands/
 RUN cd /usr/local/bin && \
     GOCMD_VER=$(curl -L -s https://raw.githubusercontent.com/cyverse/gocommands/main/VERSION.txt); \
     curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
 
-# update terminal message
-RUN apt-get update && apt install lolcat neofetch figlet w3m-img imagemagick -y
-ENV PATH=${PATH}:/usr/games
-COPY 01-custom /etc/motd
-RUN chmod +x /etc/motd
-
 # install git-credential-manager 
 RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb && \
     dpkg -i gcm-linux_amd64.2.5.0.deb && \
     rm gcm-linux_amd64.2.5.0.deb
-
 # set the ENV for the credential type
 ENV GCM_CREDENTIAL_STORE=cache
+
+# update terminal message
+ENV PATH=${PATH}:/usr/games
+COPY 01-custom /etc/motd
+RUN chmod +x /etc/motd
 
 COPY kasmvnc_defaults.yaml /usr/share/kasmvnc/kasmvnc_defaults.yaml
 COPY vnc_startup.sh /dockerstartup/vnc_startup.sh
@@ -68,7 +82,6 @@ RUN cd && wget "https://github.com/conda-forge/miniforge/releases/latest/downloa
 
 # set shell as bash and terminal as linux
 ENV SHELL=/bin/bash
-
 ENV PATH="${HOME}/conda/bin:${PATH}"
 
 # Combine commands to reduce layers and use $HOME for consistency
@@ -76,7 +89,8 @@ RUN echo ". ${HOME}/conda/etc/profile.d/conda.sh" >> ${HOME}/.bashrc && \
     echo "export PS1='\u@cyverse \w $ '" >> ${HOME}/.bashrc && \
     git clone --depth=1 https://github.com/Bash-it/bash-it.git ${HOME}/.bash_it && \
     ${HOME}/.bash_it/install.sh --silent && \
-    sed -i 's/BASH_IT_THEME=.*/BASH_IT_THEME="bobby"/' ${HOME}/.bashrc && \
-    echo "/etc/motd" >> ${HOME}/.bashrc  # Correct way to add MOTD
+    sed -i 's/BASH_IT_THEME=.*/BASH_IT_THEME="simple"/' ${HOME}/.bashrc && \
+    echo "/etc/motd" >> ${HOME}/.bashrc  # message of the day
 
+# fix error
 RUN mkdir -p /home/kasm-user/Desktop
