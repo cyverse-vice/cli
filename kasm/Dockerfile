@@ -66,20 +66,17 @@ RUN cd && wget "https://github.com/conda-forge/miniforge/releases/latest/downloa
     ./Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda" && \
     rm Miniforge3-$(uname)-$(uname -m).sh
 
-# fixing error
-RUN mkdir -p /home/kasm-user/Desktop && \
-    ln -sf /home/kasm-user/Uploads /home/kasm-user/Desktop/Uploads
-
 # set shell as bash and terminal as linux
 ENV SHELL=/bin/bash
 
 ENV PATH="${HOME}/conda/bin:${PATH}"
 
-# activate conda in the bashrc
-RUN echo ". ${HOME}/conda/etc/profile.d/conda.sh" >> /home/kasm-user/.bashrc
+# Combine commands to reduce layers and use $HOME for consistency
+RUN echo ". ${HOME}/conda/etc/profile.d/conda.sh" >> ${HOME}/.bashrc && \
+    echo "export PS1='\u@cyverse \w $ '" >> ${HOME}/.bashrc && \
+    git clone --depth=1 https://github.com/Bash-it/bash-it.git ${HOME}/.bash_it && \
+    ${HOME}/.bash_it/install.sh --silent && \
+    sed -i 's/BASH_IT_THEME=.*/BASH_IT_THEME="bobby"/' ${HOME}/.bashrc && \
+    echo "/etc/motd" >> ${HOME}/.bashrc  # Correct way to add MOTD
 
-# set the PS1 prompt
-RUN echo "export PS1='\u@cyverse \w $ '" >> /home/kasm-user/.bashrc
-
-# add the message of the day to the bashrc
-RUN echo "/etc/motd" >> /home/kasm-user/.bashrc
+RUN mkdir -p /home/kasm-user/Desktop
