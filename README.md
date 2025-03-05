@@ -6,6 +6,8 @@ Browser based interactive terminal for use in [CyVere Discovery Environment](htt
 
 ## Developer Instructions
 
+Up to date as of: 03/05/2025
+
 Launch in CyVerse with a [verified user account (free)](https://user.cyverse.org):
 
 [![!Harbor](https://github.com/cyverse-vice/cli/actions/workflows/harbor.yml/badge.svg)](https://github.com/cyverse-vice/cli/actions) ![GitHub commits since tagged version](https://img.shields.io/github/commits-since/cyverse-vice/cli/latest/main?style=flat-square) 
