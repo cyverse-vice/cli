@@ -112,6 +112,9 @@ RUN mamba env create -f /home/jovyan/environment.yml
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile && \
     echo "conda activate geospatial" >> /home/jovyan/.bash_profile
 
+# Ensure that gocmd is up to date.
+RUN echo $'\n# upgrade GoCommands\nsudo gocmd upgrade > /dev/null' >> /home/jovyan/.bashrc
+
 RUN sudo groupadd --gid 1000 jovyan
 
 ENTRYPOINT ["bash", "/bin/entry.sh"]
