@@ -70,7 +70,9 @@ COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 # install git-credential-manager 
-RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
+RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb && \
+    dpkg -i gcm-linux_amd64.2.6.1.deb && \
+    rm gcm-linux_amd64.2.6.1.deb  
 
 # Install Globus Connect Server
 RUN apt-get update && \
@@ -88,7 +90,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
     
-RUN sudo dpkg -i gcm-linux_amd64.2.6.1.deb
 
 # set the ENV for the credential type
 ENV GCM_CREDENTIAL_STORE=cache
