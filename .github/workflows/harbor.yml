@@ -12,34 +12,34 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v4.2.2
       
+      - name: Login to harbor
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: harbor.cyverse.org
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2.5.0
-      
+        uses: docker/setup-buildx-action@v3.10.0
+
       - name: Cache Docker layers
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v4.2.3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
       
-      - name: Login to harbor
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2.1.0
+      - name: Build and push latest
+        id: docker_build_latest
+        uses: docker/build-push-action@v6.16.0
         with:
-          registry: harbor.cyverse.org
-          username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
-
-      - name: Build and push bash latest
-        id: docker_build_bash
-        uses: docker/build-push-action@v4.0.0
-        with:
-          context: bash 
-          file: bash/Dockerfile
+          context: latest 
+          file: latest/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: harbor.cyverse.org/vice/cli/bash:latest
