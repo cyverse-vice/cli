@@ -73,12 +73,20 @@ RUN chmod +x /etc/motd
 RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
 
 # Install Globus Connect Server
-RUN curl -LOs https://downloads.globus.org/globus-connect-server/stable/installers/repo/deb/globus-repo_latest_all.deb && \
+RUN apt-get update && \
+    apt-get install -y curl gnupg && \
+    curl -LOs https://downloads.globus.org/globus-connect-server/stable/installers/repo/deb/globus-repo_latest_all.deb && \
     dpkg -i globus-repo_latest_all.deb && \
-    apt-key add /usr/share/globus-repo/RPM-GPG-KEY-Globus && \
-    apt update && \
-    apt install globus-connect-server54 -y && \
-    rm globus-repo_latest_all.deb
+    # The 'apt-key' command is removed in Ubuntu 24.04.
+    # The globus-repo package places the key at /usr/share/globus-repo/RPM-GPG-KEY-Globus.
+    # We will copy the key to the new trusted key directory as an ASCII file.
+    cp /usr/share/globus-repo/RPM-GPG-KEY-Globus /etc/apt/trusted.gpg.d/globus-repo-key.asc && \
+    apt-get update && \
+    apt-get install -y globus-connect-server54 && \
+    # Clean up installation files
+    rm globus-repo_latest_all.deb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
     
 RUN sudo dpkg -i gcm-linux_amd64.2.6.1.deb
 
