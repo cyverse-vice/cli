@@ -1,4 +1,4 @@
-FROM jupyter/minimal-notebook:latest
+FROM quay.io/jupyter/minimal-notebook:latest
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
       org.label-schema.description="Built from Ubuntu 24.04 w/ MiniConda3" \
