@@ -1,7 +1,7 @@
 FROM jupyter/minimal-notebook:latest
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
-      org.label-schema.description="Built from Ubuntu 22.04 w/ MiniConda3" \
+      org.label-schema.description="Built from Ubuntu 24.04 w/ MiniConda3" \
       org.label-schema.url="https://cyverse.org" \
       org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
       org.label-schema.vendor="CyVerse" \
@@ -47,7 +47,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Go
-RUN wget -q -c https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+RUN wget -q -c https://dl.google.com/go/go1.24.5.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
 
 # install ttyd
 RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64" > ttyd && \
@@ -70,9 +70,9 @@ COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 # install git-credential-manager 
-RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb
+RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
 
-RUN sudo dpkg -i gcm-linux_amd64.2.5.0.deb
+RUN sudo dpkg -i gcm-linux_amd64.2.6.1.deb
 
 # set the ENV for the credential type
 ENV GCM_CREDENTIAL_STORE=cache
