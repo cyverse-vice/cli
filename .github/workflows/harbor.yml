@@ -34,12 +34,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       
-      - name: Build and push latest
-        id: docker_build_latest
+      - name: Build and push bash
+        id: docker_build_bash
         uses: docker/build-push-action@v6.16.0
         with:
-          context: latest 
-          file: latest/Dockerfile
+          context: bash 
+          file: bash/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: harbor.cyverse.org/vice/cli/bash:latest
