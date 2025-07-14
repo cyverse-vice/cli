@@ -71,8 +71,10 @@ RUN chmod +x /etc/motd
 
 # install git-credential-manager 
 RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb && \
-    dpkg -i gcm-linux_amd64.2.6.1.deb && \
-    rm gcm-linux_amd64.2.6.1.deb  
+    # Use 'apt-get install' with the local file path to handle dependencies automatically
+    apt-get install -y ./gcm-linux_amd64.2.6.1.deb && \
+    # Clean up the downloaded file
+    rm gcm-linux_amd64.2.6.1.deb
 
 # Install Globus Connect Server
 RUN apt-get update && \
