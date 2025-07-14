@@ -72,6 +72,14 @@ RUN chmod +x /etc/motd
 # install git-credential-manager 
 RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
 
+# Install Globus Connect Server
+RUN curl -LOs https://downloads.globus.org/globus-connect-server/stable/installers/repo/deb/globus-repo_latest_all.deb && \
+    dpkg -i globus-repo_latest_all.deb && \
+    apt-key add /usr/share/globus-repo/RPM-GPG-KEY-Globus && \
+    apt update && \
+    apt install globus-connect-server54 -y && \
+    rm globus-repo_latest_all.deb
+    
 RUN sudo dpkg -i gcm-linux_amd64.2.6.1.deb
 
 # set the ENV for the credential type
