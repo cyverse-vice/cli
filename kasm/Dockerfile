@@ -1,4 +1,4 @@
-FROM kasmweb/terminal:1.15.0-rolling
+FROM kasmweb/terminal:1.17.0-rolling
 
 LABEL org.label-schema.name="CyVerse VICE CloudShell" \
       org.label-schema.description="Built from KASM Terminal" \
