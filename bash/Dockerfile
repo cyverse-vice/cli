@@ -75,11 +75,26 @@ RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/downlo
     apt-get install -y ./gcm-linux_amd64.2.6.1.deb && \
     # Clean up the downloaded file
     rm gcm-linux_amd64.2.6.1.deb
+
+# install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update && \
+    rm -rf awscliv2.zip
+
+# install Node and NPM
+RUN apt update && apt install -y nodejs npm
+   
     
 # set the ENV for the credential type
 ENV GCM_CREDENTIAL_STORE=cache
 
 USER jovyan
+
+# Install  Claude Code
+RUN npm config set prefix /home/jovyan/.npm-global && \
+    export PATH=/home/jovyan/.npm-global/bin:$PATH && \ 
+    npm install -g @anthropic-ai/claude-code
 
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
 
