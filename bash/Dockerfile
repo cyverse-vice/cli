@@ -101,8 +101,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
 # Set message of the day on terminal start for both bash and zsh
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc
 
-# set path for Go 
-ENV PATH=$PATH:/usr/local/go/bin
+# set path for Go and NPM
+ENV PATH=$PATH:/usr/local/go/bin:/home/jovyan/.npm-global/bin
 
 # set shell as bash and terminal as linux
 ENV SHELL=bash
