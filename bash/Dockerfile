@@ -82,12 +82,33 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update && \
     rm -rf awscliv2.zip
 
+# install S3FS-FUSE for mounting S3 buckets
+RUN apt-get update && \
+    apt-get install -y s3fs fuse && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure FUSE for non-root users
+RUN echo "user_allow_other" >> /etc/fuse.conf && \
+    chmod 644 /etc/fuse.conf
+
+# Create /osn directory for OpenStorageNetwork bucket mounts
+RUN mkdir -p /osn && \
+    chmod 755 /osn && \
+    chown 1000:100 /osn
+
 # install Node and NPM
 RUN apt update && apt install -y nodejs npm
    
     
 # set the ENV for the credential type
 ENV GCM_CREDENTIAL_STORE=cache
+
+# Copy scripts while still root and set permissions
+COPY entry.sh /bin
+COPY osn-mount.sh /usr/local/bin/
+RUN chmod +x /bin/entry.sh && \
+    chmod +x /usr/local/bin/osn-mount.sh
 
 USER jovyan
 
@@ -115,7 +136,6 @@ EXPOSE 7681
 WORKDIR /home/jovyan/data-store
 
 # changes tmux layout while running
-COPY entry.sh /bin
 RUN echo 'set-option -g status off' >> ~/.tmux.conf
 
 # add iRODS iCommands to user profile as JSON
