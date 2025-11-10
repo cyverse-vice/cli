@@ -94,10 +94,10 @@ RUN chmod +x /bin/entry.sh && \
 
 USER jovyan
 
-# Install Claude Code
+# Install Claude Code, OpenAI Codex, and Google Gemini CLI
 RUN npm config set prefix /home/jovyan/.npm-global && \
     export PATH=/home/jovyan/.npm-global/bin:$PATH && \
-    npm install -g @anthropic-ai/claude-code
+    npm install -g @anthropic-ai/claude-code @openai/codex @google/gemini-cli
 
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
