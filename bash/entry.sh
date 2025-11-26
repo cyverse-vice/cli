@@ -188,4 +188,4 @@ if [ -f "$HOME/.aws/credentials" ] && [ -f "$HOME/.aws/config" ]; then
   mount | grep "/osn/" | awk '{print "  - " $1 " -> " $3}' || echo "  No buckets currently mounted"
 fi
 
-exec /usr/bin/tini -- ttyd tmux new -A -s ttyd bash
+exec /usr/bin/tini -- ttyd -W tmux new -A -s ttyd bash
