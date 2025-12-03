@@ -10,7 +10,7 @@ LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
 USER root
 
 # Add sudo to user
-ARG LOCAL_USER=user
+ARG LOCAL_USER=jovyan
 
 RUN apt-get update && \
     apt-get install -y sudo && \
