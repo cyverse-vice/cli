@@ -47,7 +47,10 @@ RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64
 
 # Install remaining packages: locales, terminal tools, s3fs, Node/NPM
 RUN apt-get update && \
-    apt-get install -y locales lolcat neofetch figlet w3m-img imagemagick s3fs fuse nodejs npm && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
+    export NVM_DIR="$HOME/.nvm" && \
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+    apt-get install -y locales lolcat neofetch figlet w3m-img imagemagick s3fs fuse npm && \
     locale-gen en_US.UTF-8 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -95,7 +98,10 @@ RUN chmod +x /bin/entry.sh && \
 USER jovyan
 
 # Install Claude Code, OpenAI Codex, and Google Gemini CLI
-RUN npm config set prefix /home/jovyan/.npm-global && \
+RUN nvm install 20 && \
+    nvm use 20 && \
+    nvm alias default 20 && \
+    npm config set prefix /home/jovyan/.npm-global && \
     export PATH=/home/jovyan/.npm-global/bin:$PATH && \
     npm install -g @anthropic-ai/claude-code @openai/codex @google/gemini-cli
 
