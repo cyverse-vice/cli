@@ -19,10 +19,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Tini
-ENV TZ America/Phoenix
+ENV TZ=America/Phoenix
 ENV LANG=C.UTF-8 
-ENV LC_ALL "en_US.UTF-8"
-ENV PATH /opt/conda/bin:$PATH
+ENV LC_ALL="en_US.UTF-8"
+ENV PATH=/opt/conda/bin:$PATH
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
@@ -47,10 +47,8 @@ RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64
 
 # Install remaining packages: locales, terminal tools, s3fs, Node/NPM
 RUN apt-get update && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
-    export NVM_DIR="$HOME/.nvm" && \
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
-    apt-get install -y locales lolcat neofetch figlet w3m-img imagemagick s3fs fuse npm && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y locales lolcat neofetch figlet w3m-img imagemagick s3fs fuse nodejs socat bubblewrap && \
     locale-gen en_US.UTF-8 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -98,12 +96,9 @@ RUN chmod +x /bin/entry.sh && \
 USER jovyan
 
 # Install Claude Code, OpenAI Codex, and Google Gemini CLI
-RUN nvm install 20 && \
-    nvm use 20 && \
-    nvm alias default 20 && \
-    npm config set prefix /home/jovyan/.npm-global && \
+RUN npm config set prefix /home/jovyan/.npm-global && \
     export PATH=/home/jovyan/.npm-global/bin:$PATH && \
-    npm install -g @anthropic-ai/claude-code @openai/codex @google/gemini-cli
+    npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex
 
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
