@@ -1,48 +1,83 @@
-[![Project Supported by CyVerse](https://de.cyverse.org/Powered-By-CyVerse-blue.svg)](https://learning.cyverse.org/projects/vice/en/latest/) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) [![license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0) 
+[![Project Supported by CyVerse](https://de.cyverse.org/Powered-By-CyVerse-blue.svg)](https://learning.cyverse.org/projects/vice/en/latest/) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
 # Cloud Shell
 
-Browser based interactive terminal for use in [CyVere Discovery Environment](https://learning.cyverse.org/vice/about/) Featured Apps listing. 
+Browser-based interactive terminal for use in [CyVerse Discovery Environment](https://learning.cyverse.org/vice/about/) Featured Apps listing.
 
-## Developer Instructions
+[![Harbor Build Status](https://github.com/cyverse-vice/cli/actions/workflows/harbor.yml/badge.svg)](https://github.com/cyverse-vice/cli/actions) ![GitHub commits since tagged version](https://img.shields.io/github/commits-since/cyverse-vice/cli/latest/main?style=flat-square)
 
-Up to date as of: 03/05/2025
+## Quick Launch
 
-Launch in CyVerse with a [verified user account (free)](https://user.cyverse.org):
+[![quicklaunch](https://img.shields.io/badge/Cloud%20Shell-bash-green?style=plastic&logo=ubuntu)](https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/launch)
 
-[![!Harbor](https://github.com/cyverse-vice/cli/actions/workflows/harbor.yml/badge.svg)](https://github.com/cyverse-vice/cli/actions) ![GitHub commits since tagged version](https://img.shields.io/github/commits-since/cyverse-vice/cli/latest/main?style=flat-square) 
+## Features
 
-[![quicklaunch](https://img.shields.io/badge/Ubuntu%2020.04-bash-red?style=plastic&logo=ubuntu)](https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/launch)
+This cloud shell environment includes:
 
-Shell with BASH and ZSH command line interface (CLI). Intended for running shell commands on [CyVerse VICE](https://learning.cyverse.org/vice/extend_apps/).
+### AI Development Tools
+- **Claude Code** - Anthropic AI coding assistant (`claude`)
+- **Gemini CLI** - Google AI CLI (`gemini`)
+- **OpenAI Codex** - OpenAI coding assistant (`codex`)
+- **Node.js 20.x** - JavaScript runtime for AI tools
 
-Uses `tini` and `ttyd` to run a terminal in a browser.
+### Development Tools
+- **GitHub CLI (`gh`)** - Command-line tool for GitHub operations
+- **Git Credential Manager** - Secure credential storage
+- **Go** - Go programming language
+- **AWS CLI** - Amazon Web Services CLI
 
-Built with an Ubuntu 20.04 base, also includes MiniConda `conda`, `python`, `go`, and iRODS `icommands`
+### CyVerse Integration
+- **GoCommands (`gocmd`)** - CyVerse data transfer utilities
+- **iRODS iCommands** - Direct access to CyVerse Data Store
 
-Text editors include `emacs`, `nano`, `vi`, & `vim`
+### System Utilities
+- **ttyd** - Browser-based terminal access (port 7681)
+- **tmux** - Terminal multiplexer for persistent sessions
+- **MiniConda/Mamba** - Python environment management
+- **Monitoring** - htop, glances for system monitoring
+- **Text editors** - nano, vim, emacs
 
-Monitors include `top`, `htop`, & `glances`
+## Run Locally
 
-To build and run the image locally:
-
-```
+```bash
+# Clone and build
 git clone https://github.com/cyverse-vice/cli.git
-cd cli/zsh
-docker build -t cli:zsh .
-docker run -it -p 7681:7861 cli:zsh
+cd cli/bash
+docker build -t cli:bash .
+
+# Run container
+docker run -it -p 7681:7681 cli:bash
 ```
 
-Test from [CyVerse Harbor](https://harbor.cyverse.org/harbor/projects/17/repositories/cli%2Fbash):
+Access the terminal at: http://localhost:7681
 
-```
+## Run from Harbor Registry
+
+```bash
 docker run -it --rm -p 7681:7681 harbor.cyverse.org/vice/cli/bash:latest
 ```
 
-To build your own version of this image, you can use the hosted version:
+## Build Your Own Container
 
-```
+```dockerfile
 FROM harbor.cyverse.org/vice/cli/bash:latest
+
+# Add your customizations
+RUN apt-get update && apt-get install -y your-package
 ```
 
-[Integrate your own Containers and Apps into CyVerse](https://learning.cyverse.org/de/create_apps/)
+## Available Variants
+
+| Variant | Description |
+|---------|-------------|
+| bash | Main cloud shell with AI tools (recommended) |
+| zsh | Alternative shell with zsh and oh-my-zsh |
+| kasm | Desktop environment with KasmVNC |
+| landisii | Landis-II ecological modeling |
+| parflow | ParFlow hydrological modeling |
+
+## Resources
+
+- [CyVerse VICE Documentation](https://learning.cyverse.org/vice/about/)
+- [Integrate Your Own Tools](https://learning.cyverse.org/de/create_apps/)
+- [GoCommands Documentation](https://learning.cyverse.org/ds/gocommands/)
