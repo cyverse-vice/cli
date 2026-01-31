@@ -12,6 +12,10 @@ USER root
 # Add sudo to user
 ARG LOCAL_USER=jovyan
 
+# Create group 1000 if it doesn't exist (CyVerse VICE may assign this GID)
+RUN getent group 1000 || groupadd -g 1000 jovyan-group && \
+    usermod -a -G 1000 jovyan
+
 RUN apt-get update && \
     apt-get install -y sudo && \
     echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
