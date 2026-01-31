@@ -8,7 +8,10 @@ Browser-based interactive terminal for use in [CyVerse Discovery Environment](ht
 
 ## Quick Launch
 
-[![quicklaunch](https://img.shields.io/badge/Cloud%20Shell-bash-green?style=plastic&logo=ubuntu)](https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/launch)
+| Version | Instant Launch | Regular Launch |
+|---------|----------------|----------------|
+| 24.04 | <a href="https://de.cyverse.org/instantlaunch/77c2a01e-60b9-11f0-b966-008cfa5ae621" target="_blank" rel="noopener noreferrer"><img src="https://de.cyverse.org/Powered-By-CyVerse-blue.svg"></a> | <a href="https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/versions/52fbf0a0-60b9-11f0-9c1d-008cfa5ae621/launch" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Cloud%20Shell-24.04-green?style=plastic&logo=ubuntu"></a> |
+| gpu-24.04 | <a href="https://de.cyverse.org/instantlaunch/c99a981e-7eab-11f0-94d3-008cfa5ae621" target="_blank" rel="noopener noreferrer"><img src="https://de.cyverse.org/Powered-By-CyVerse-blue.svg"></a> | <a href="https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621/versions/33e7f454-7d04-11f0-82b5-008cfa5ae621/launch" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Cloud%20Shell-gpu--24.04-green?style=plastic&logo=ubuntu"></a> |
 
 ## Features
 
