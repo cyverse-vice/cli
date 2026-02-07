@@ -114,6 +114,10 @@ RUN npm config set prefix /home/jovyan/.npm-global && \
     export PATH=/home/jovyan/.npm-global/bin:$PATH && \
     npm install -g @google/gemini-cli @openai/codex
 
+# Install OpenCode (https://opencode.ai/)
+RUN curl -fsSL https://opencode.ai/install | bash
+ENV PATH="/home/jovyan/.opencode/bin:${PATH}"
+
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc && \
