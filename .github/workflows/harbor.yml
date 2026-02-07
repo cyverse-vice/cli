@@ -46,7 +46,9 @@ jobs:
           file: bash/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: harbor.cyverse.org/vice/cli/bash:latest
+          tags: |
+            harbor.cyverse.org/vice/cli/bash:latest
+            harbor.cyverse.org/vice/cli/bash:24.04.1
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
