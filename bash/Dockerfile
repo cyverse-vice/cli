@@ -45,7 +45,7 @@ RUN apt-get update && \
 RUN wget -q -c https://dl.google.com/go/go1.25.5.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
 
 # install ttyd
-RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.8/ttyd.x86_64" > ttyd && \
+RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64" > ttyd && \
     chmod a+x ttyd && \
     mv ttyd /usr/local/bin/ttyd
 
@@ -69,10 +69,10 @@ COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 # install git-credential-manager
-RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.7.0/gcm-linux_amd64.2.7.0.deb && \
+RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.7.3/gcm-linux-x64-2.7.3.deb && \
     apt-get update && \
-    apt-get install -y ./gcm-linux_amd64.2.7.0.deb && \
-    rm gcm-linux_amd64.2.7.0.deb && \
+    apt-get install -y ./gcm-linux-x64-2.7.3.deb && \
+    rm gcm-linux-x64-2.7.3.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
