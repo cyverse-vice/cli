@@ -107,25 +107,22 @@ RUN chmod +x /bin/entry.sh && \
 
 USER jovyan
 
-# Install Claude Code using official installer
-RUN curl -fsSL https://claude.ai/install.sh | bash
-
-# Install OpenAI Codex and Google Gemini CLI via npm
+# Install Claude Code, OpenAI Codex, and Google Gemini CLI via npm
+# (npm install is preferred over claude.ai/install.sh for Docker builds)
 RUN npm config set prefix /home/jovyan/.npm-global && \
-    export PATH=/home/jovyan/.npm-global/bin:$PATH && \
-    npm install -g @google/gemini-cli @openai/codex
+    npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex && \
+    npm cache clean --force
 
 # Install OpenCode (https://opencode.ai/)
 RUN curl -fsSL https://opencode.ai/install | bash
-ENV PATH="/home/jovyan/.opencode/bin:${PATH}"
 
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc && \
     echo $'\n# upgrade GoCommands\nsudo gocmd upgrade > /dev/null' >> ~/.bashrc
 
-# set path for Go and NPM
-ENV PATH=$PATH:/usr/local/go/bin:/home/jovyan/.npm-global/bin
+# set path for Go, NPM globals, and OpenCode
+ENV PATH="/home/jovyan/.npm-global/bin:/home/jovyan/.opencode/bin:/usr/local/go/bin:${PATH}"
 
 # set shell as bash and terminal as linux
 ENV SHELL=bash
