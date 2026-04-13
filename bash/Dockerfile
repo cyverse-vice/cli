@@ -113,8 +113,8 @@ RUN npm config set prefix /home/jovyan/.npm-global && \
     npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex && \
     npm cache clean --force
 
-# Install OpenCode (https://opencode.ai/)
-RUN curl -fsSL https://opencode.ai/install | bash
+# Install OpenCode (https://opencode.ai/) — --no-modify-path avoids shell detection in Docker
+RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
 
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
