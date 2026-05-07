@@ -9,7 +9,9 @@ LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
 
 USER root
 
-# Add sudo to user
+# Build arguments for multi-architecture support
+ARG TARGETARCH
+ARG TARGETOS
 ARG LOCAL_USER=user
 
 RUN apt-get update && \
@@ -31,17 +33,20 @@ RUN apt-get update && \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
     gettext-base git mercurial subversion \
     tmux curl grep sed dpkg && \
-    curl -L "https://github.com/krallin/tini/releases/download/v0.19.0/tini_0.19.0-amd64.deb" > tini.deb && \
+    TINI_ARCH=$(case ${TARGETARCH} in amd64) echo "amd64";; arm64) echo "arm64";; *) echo "amd64";; esac) && \
+    curl -L "https://github.com/krallin/tini/releases/download/v0.19.0/tini_0.19.0-${TINI_ARCH}.deb" > tini.deb && \
     dpkg -i tini.deb && \
     rm tini.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Go
-RUN wget -q -c https://dl.google.com/go/go1.25.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+RUN GO_ARCH=$(case ${TARGETARCH} in amd64) echo "amd64";; arm64) echo "arm64";; *) echo "amd64";; esac) && \
+    wget -q -c https://dl.google.com/go/go1.25.4.linux-${GO_ARCH}.tar.gz -O - | sudo tar -xz -C /usr/local
 
 # install ttyd
-RUN curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64" > ttyd && \
+RUN TTYD_ARCH=$(case ${TARGETARCH} in amd64) echo "x86_64";; arm64) echo "aarch64";; *) echo "x86_64";; esac) && \
+    curl -L "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.${TTYD_ARCH}" > ttyd && \
     chmod a+x ttyd && \
     mv ttyd /usr/local/bin/ttyd
 
@@ -55,8 +60,9 @@ RUN apt-get update && \
 # Install GoCommands
 # https://learning.cyverse.org/ds/gocommands/
 RUN cd /usr/local/bin && \
+    GOCMD_ARCH=$(case ${TARGETARCH} in amd64) echo "amd64";; arm64) echo "arm64";; *) echo "amd64";; esac) && \
     GOCMD_VER=$(curl -L -s https://raw.githubusercontent.com/cyverse/gocommands/main/VERSION.txt); \
-    curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-amd64.tar.gz | tar zxvf -
+    curl -L -s https://github.com/cyverse/gocommands/releases/download/${GOCMD_VER}/gocmd-${GOCMD_VER}-linux-${GOCMD_ARCH}.tar.gz | tar zxvf -
 
 # update terminal message
 ENV PATH=${PATH}:/usr/games
@@ -64,17 +70,19 @@ COPY 01-custom /etc/motd
 RUN chmod +x /etc/motd
 
 # install git-credential-manager
-RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb && \
+RUN GCM_ARCH=$(case ${TARGETARCH} in amd64) echo "amd64";; arm64) echo "arm64";; *) echo "amd64";; esac) && \
+    wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_${GCM_ARCH}.2.6.1.deb && \
     # Use 'apt-get install' with the local file path to handle dependencies automatically
-    apt-get install -y ./gcm-linux_amd64.2.6.1.deb && \
+    apt-get install -y ./gcm-linux_${GCM_ARCH}.2.6.1.deb && \
     # Clean up the downloaded file
-    rm gcm-linux_amd64.2.6.1.deb
+    rm gcm-linux_${GCM_ARCH}.2.6.1.deb
 
 # install AWS CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+RUN AWS_ARCH=$(case ${TARGETARCH} in amd64) echo "x86_64";; arm64) echo "aarch64";; *) echo "x86_64";; esac) && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update && \
-    rm -rf awscliv2.zip
+    rm -rf awscliv2.zip aws
 
 # Configure FUSE for non-root users and create OSN directory
 RUN echo "user_allow_other" >> /etc/fuse.conf && \
@@ -94,10 +102,10 @@ RUN chmod +x /bin/entry.sh && \
 
 USER jovyan
 
-# Install Claude Code
+# Install AI CLI tools (Claude Code, Codex CLI, Gemini CLI, OpenCode)
 RUN npm config set prefix /home/jovyan/.npm-global && \
     export PATH=/home/jovyan/.npm-global/bin:$PATH && \
-    npm install -g @anthropic-ai/claude-code
+    npm install -g @anthropic-ai/claude-code @openai/codex @google/gemini-cli opencode-ai
 
 # Configure bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
