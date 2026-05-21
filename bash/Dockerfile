@@ -107,11 +107,16 @@ RUN chmod +x /bin/entry.sh && \
 
 USER jovyan
 
-# Install Claude Code, OpenAI Codex, and Google Gemini CLI via npm
+# Install Claude Code and OpenAI Codex via npm
 # (npm install is preferred over claude.ai/install.sh for Docker builds)
 RUN npm config set prefix /home/jovyan/.npm-global && \
-    npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex && \
+    npm install -g @anthropic-ai/claude-code @openai/codex && \
     npm cache clean --force
+
+# Install Antigravity CLI (replaces deprecated Google Gemini CLI — deadline June 18 2026)
+# https://antigravity.google/blog/introducing-google-antigravity-cli
+# Binary: agy, installed to ~/.local/bin
+RUN curl -fsSL https://antigravity.google/cli/install.sh | bash
 
 # Install OpenCode (https://opencode.ai/) — --no-modify-path avoids shell detection hang in Docker
 RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
@@ -121,8 +126,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc && \
     echo $'\n# upgrade GoCommands\nsudo gocmd upgrade > /dev/null' >> ~/.bashrc
 
-# set path for Go, NPM globals, and OpenCode
-ENV PATH="/home/jovyan/.npm-global/bin:/home/jovyan/.opencode/bin:/usr/local/go/bin:${PATH}"
+# set path for Go, NPM globals, OpenCode, and Antigravity CLI
+ENV PATH="/home/jovyan/.local/bin:/home/jovyan/.npm-global/bin:/home/jovyan/.opencode/bin:/usr/local/go/bin:${PATH}"
 
 # set shell as bash and terminal as linux
 ENV SHELL=bash
