@@ -1,0 +1,10 @@
+# Propagated from rstudio-verse / rstudio-geospatial (which already use this).
+# Keeps GitHub Actions versions current via automated PRs. Drop into
+# .github/dependabot.yml in repos that lack it.
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

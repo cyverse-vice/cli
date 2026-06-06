@@ -1,0 +1,16 @@
+# hadolint config for CyVerse VICE Dockerfiles.
+# Start permissive, tighten over time. Remove an ignore once every repo's
+# Dockerfiles satisfy that rule. Docs: https://github.com/hadolint/hadolint
+failure-threshold: warning
+ignored:
+  - DL3008  # pin apt package versions — VICE images intentionally track latest base packages
+  - DL3013  # pin pip versions — same rationale
+  - DL3009  # delete the apt-get lists — REMOVE this ignore once all repos clean lists (rstudio-verse does not)
+  - DL4006  # set -o pipefail before pipes — noisy on simple RUN lines
+trustedRegistries:
+  - harbor.cyverse.org
+  - quay.io
+  - ghcr.io
+  - lscr.io
+  - docker.io
+  - nvcr.io

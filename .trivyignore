@@ -1,0 +1,7 @@
+# Trivy ignore file. One CVE ID per line. ALWAYS add a justification comment.
+# Only suppress when a finding is unfixable AND accepted (e.g. inherited from the
+# upstream base with no fixed version and not exploitable in the VICE context).
+# Re-review on every weekly rebuild; delete entries once the base ships a fix.
+#
+# Example:
+# CVE-2023-12345  # accepted 2026-06: rocker base, no fixed version, not reachable in VICE

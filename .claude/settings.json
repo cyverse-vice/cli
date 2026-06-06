@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "cyverse-vice": { "source": { "source": "github", "repo": "cyverse-vice/vice-toolkit" } }
+  },
+  "enabledPlugins": { "vice-toolkit@cyverse-vice": true }
+}
