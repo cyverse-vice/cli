@@ -1,0 +1,55 @@
+# Image security scanning for a CyVerse VICE image (scaffolded by vice-toolkit).
+# hadolint lints the Dockerfile on every PR; trivy scans the published Harbor
+# image weekly + on demand (not rebuilt per PR). Report-only by default.
+name: security
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: bash/Dockerfile
+          config: .hadolint.yaml
+          failure-threshold: warning
+          no-fail: true            # report-only — set false to gate the PR
+
+  scan:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.cyverse.org
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+      - name: Scan published image for CVEs (trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: harbor.cyverse.org/vice/cli/bash:latest
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '0'           # report-only — set '1' to gate on fixable findings
+        env:
+          TRIVY_TIMEOUT: 20m
+      - name: Upload results to the GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-bash

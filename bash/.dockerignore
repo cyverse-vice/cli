@@ -1,0 +1,10 @@
+# Drop this into the active build-context directory (e.g. latest/.dockerignore).
+# Keeps repo metadata and editor cruft out of the image build context/layers.
+**/.git
+**/.github
+**/*.md
+**/LICENSE
+**/.gitignore
+**/.DS_Store
+**/*.swp
+**/.ipynb_checkpoints
