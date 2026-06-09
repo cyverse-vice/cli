@@ -40,7 +40,7 @@ jobs:
 
       - name: Build and push bash
         id: docker_build_bash
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: bash
           file: bash/Dockerfile
