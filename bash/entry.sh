@@ -13,39 +13,6 @@ claude mcp add-json filesystem '{
   "autoApprove": ["read_file", "read_multiple_files", "write_file", "edit_file", "create_directory", "list_directory", "list_directory_with_sizes", "directory_tree", "move_file", "search_files", "get_file_info", "list_allowed_directories"]
 }'
 
-# Add fetch MCP server - provides web content fetching capabilities
-claude mcp add-json fetch '{
-  "disabled": false,
-  "timeout": 60,
-  "type": "stdio",
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-fetch"],
-  "autoApprove": ["fetch"]
-}'
-
-# Add memory MCP server - provides persistent memory across sessions
-claude mcp add-json memory '{
-  "disabled": false,
-  "timeout": 60,
-  "type": "stdio",
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-memory"],
-  "autoApprove": ["create_entities", "create_relations", "add_observations", "delete_entities", "delete_observations", "delete_relations", "read_graph", "search_nodes", "open_nodes"]
-}'
-
-# Add SQLite MCP server - provides database capabilities for data analysis
-claude mcp add-json sqlite '{
-  "disabled": false,
-  "timeout": 60,
-  "type": "stdio",
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-sqlite", "/home/jovyan/work"],
-  "autoApprove": ["read_query", "write_query", "create_table", "list_tables", "describe_table", "append_insight"]
-}'
-
-# Add datastore MCP server (HTTP transport) - provides CyVerse data store access
-claude mcp add -t http datastore http://mcp.cyverse.ai/mcp
-
 # Copy .gitconfig from volume mount (if it exists)
 if [ -f /data-store/iplant/home/$IPLANT_USER/.gitconfig ]; then
   cp /data-store/iplant/home/$IPLANT_USER/.gitconfig ~/
