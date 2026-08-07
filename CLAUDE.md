@@ -11,7 +11,7 @@ This repository contains Docker configurations for creating browser-based cloud 
 ### Build Docker Images Locally
 
 ```bash
-# Build bash variant (primary, includes Claude Code)
+# Build bash variant (primary)
 cd bash && docker build -t cli:bash .
 
 # Build zsh variant (Ubuntu 20.04 base)
@@ -38,7 +38,7 @@ Access the terminal at: http://localhost:7681
 ## Architecture Overview
 
 ### Directory Structure
-- **bash/**: Main cloud shell with Jupyter base, Claude Code pre-installed, and comprehensive tooling
+- **bash/**: Main cloud shell with Jupyter base and comprehensive tooling
 - **zsh/**: Alternative shell with zsh and oh-my-zsh configuration
 - **kasm/**: Desktop environment with KasmVNC for GUI applications
 - **landisii/**: Specialized environment for Landis-II ecological modeling
@@ -59,7 +59,6 @@ Access the terminal at: http://localhost:7681
 
 5. **Entry Point**: `entry.sh` script handles:
    - iRODS environment configuration
-   - MCP server configuration for Claude Code
    - User profile setup (AWS, SSH, Git configs)
    - Session initialization
 
@@ -70,7 +69,7 @@ Access the terminal at: http://localhost:7681
 - **MiniConda/Mamba**: Python environment management
 - **GoCommands**: CyVerse data management tools
 - **iRODS iCommands**: Data store integration
-- **Claude Code**: AI coding assistant (bash variant only)
+- **install-harnesses**: Installs the closed source AI harnesses (Claude Code, Antigravity CLI) on demand; symlinked to `claude` and `agy` (bash variant only)
 - **Git Credential Manager**: Secure credential storage
 
 ## CI/CD Pipeline
@@ -105,4 +104,4 @@ Key variables used in containers:
 ### Integration Points
 - **CyVerse Data Store**: Mounted at `/home/jovyan/data-store` (bash) or `/home/user/data-store`
 - **iRODS**: Configuration auto-generated from environment variables
-- **MCP Server**: Provides file system access for Claude Code
+- **MCP Server**: Provides file system access for Claude Code; registered by `install-harnesses` when Claude Code is installed
