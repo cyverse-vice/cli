@@ -3,18 +3,18 @@
 echo '{"irods_host": "swcacti1.unm.edu", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "swcactiZone"}' | envsubst > $HOME/.irods/irods_environment.json
 
 # Copy .gitconfig from volume mount (if it exists)
-if [ -f /data-store/iplant/home/$IPLANT_USER/.gitconfig ]; then
-  cp /data-store/iplant/home/$IPLANT_USER/.gitconfig ~/
+if [ -f /data-store/swcactiZone/home/$IPLANT_USER/.gitconfig ]; then
+  cp /data-store/swcactiZone/home/$IPLANT_USER/.gitconfig ~/
 fi
 
 # Copy S3 AWS (if it exists)
-if [ -d /data-store/iplant/home/$IPLANT_USER/.aws ]; then
-  cp -r /data-store/iplant/home/$IPLANT_USER/.aws ~/
+if [ -d /data-store/swcactiZone/home/$IPLANT_USER/.aws ]; then
+  cp -r /data-store/swcactiZone/home/$IPLANT_USER/.aws ~/
 fi
 
 # Copy SSH keys (if it exists)
-if [ -d /data-store/iplant/home/$IPLANT_USER/.ssh ]; then
-  cp -r /data-store/iplant/home/$IPLANT_USER/.ssh ~/
+if [ -d /data-store/swcactiZone/home/$IPLANT_USER/.ssh ]; then
+  cp -r /data-store/swcactiZone/home/$IPLANT_USER/.ssh ~/
 fi
 
 # Mount S3 buckets from AWS config if credentials exist
