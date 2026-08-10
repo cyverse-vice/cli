@@ -145,12 +145,14 @@ ENV TERM=xterm
 # open port 7681 for ttyd
 EXPOSE 7681
 
-#set working directory
-WORKDIR /home/jovyan/data-store
+# set working directory - tmux takes the cwd of every window, including new
+# ones (ctrl-b c), from the session it starts in, so this lands users in $HOME
+WORKDIR /home/jovyan
 
-# Configure tmux and create iRODS directory
+# Configure tmux and create the iRODS and data store directories
+# (data-store was previously created implicitly by WORKDIR)
 RUN echo 'set-option -g status off' >> ~/.tmux.conf && \
-    mkdir /home/jovyan/.irods
+    mkdir -p /home/jovyan/.irods /home/jovyan/data-store
 
 # activate base Python environment using mamba
 COPY environment.yml /home/jovyan/
