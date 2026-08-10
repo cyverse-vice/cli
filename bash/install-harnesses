@@ -119,7 +119,7 @@ function configure_claude_mcp() {
   "timeout": 60,
   "type": "stdio",
   "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/jovyan/work", "/home/jovyan/data-store"],
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/jovyan/scratch", "/home/jovyan/data-store"],
   "autoApprove": ["read_file", "read_multiple_files", "write_file", "edit_file", "create_directory", "list_directory", "list_directory_with_sizes", "directory_tree", "move_file", "search_files", "get_file_info", "list_allowed_directories"]
 }' --scope user
 }

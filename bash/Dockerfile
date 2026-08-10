@@ -154,6 +154,14 @@ WORKDIR /home/jovyan
 RUN echo 'set-option -g status off' >> ~/.tmux.conf && \
     mkdir -p /home/jovyan/.irods /home/jovyan/data-store
 
+# The Jupyter base image ships a ~/work directory. Rename it to ~/scratch to
+# make clear that it is temporary storage and is not backed by the data store.
+RUN if [ -d /home/jovyan/work ]; then \
+        mv /home/jovyan/work /home/jovyan/scratch; \
+    else \
+        mkdir -p /home/jovyan/scratch; \
+    fi
+
 # activate base Python environment using mamba
 COPY environment.yml /home/jovyan/
 RUN mamba env create -f /home/jovyan/environment.yml
