@@ -2,17 +2,6 @@
 # add irods config
 echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | envsubst > $HOME/.irods/irods_environment.json
 
-# Add MCP servers for Claude Code using claude mcp add-json
-# Add filesystem MCP server - provides file system access
-claude mcp add-json filesystem '{
-  "disabled": false,
-  "timeout": 60,
-  "type": "stdio",
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/jovyan/work", "/home/jovyan/data-store"],
-  "autoApprove": ["read_file", "read_multiple_files", "write_file", "edit_file", "create_directory", "list_directory", "list_directory_with_sizes", "directory_tree", "move_file", "search_files", "get_file_info", "list_allowed_directories"]
-}'
-
 # Copy .gitconfig from volume mount (if it exists)
 if [ -f /data-store/iplant/home/$IPLANT_USER/.gitconfig ]; then
   cp /data-store/iplant/home/$IPLANT_USER/.gitconfig ~/

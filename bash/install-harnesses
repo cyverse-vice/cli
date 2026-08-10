@@ -1,0 +1,274 @@
+#!/bin/bash
+
+# Installs the closed-source AI coding harnesses that are deliberately not baked
+# into this image. Also symlinked to 'claude' and 'agy', so running either name
+# before installing prompts to install it instead of failing with "command not
+# found".
+
+# pipefail matters here: the installers run as 'curl ... | bash', and without it
+# a failed curl still reports success because bash exits 0 on empty input.
+set -uo pipefail
+
+SELF="/usr/local/bin/install-harnesses"
+SHIM_DIR="${HOME}/.local/bin"
+HARNESSES=(claude agy)
+ASSUME_YES=0
+
+function show_banner() {
+    cat << EOF
+
+Install Closed Source Harnesses
+───────────────────────────────
+Claude Code and the Antigravity CLI are proprietary, closed-source AI coding
+agents, so they are not preinstalled in this image. This script installs them
+on demand using each vendor's own supported installer.
+
+EOF
+}
+
+function show_usage() {
+    cat << EOF
+Usage: install-harnesses [OPTIONS] [HARNESS...]
+
+Harnesses:
+    claude          Claude Code (Anthropic)
+    agy             Antigravity CLI (Google)
+    all             Both of the above
+
+Commands:
+    list            Show which harnesses are installed
+    help            Show this help message
+
+Options:
+    -y, --yes       Install without prompting for confirmation
+    -h, --help      Show this help message
+
+With no arguments, shows the current status and offers to install anything
+that is missing.
+
+The commands 'claude' and 'agy' are symlinked to this script until their real
+binaries are installed, so running either one walks you through installing it.
+
+EOF
+}
+
+function harness_label() {
+    case "$1" in
+        claude) echo "Claude Code (Anthropic)" ;;
+        agy)    echo "Antigravity CLI (Google)" ;;
+    esac
+}
+
+# True only when the name resolves to something other than this script, so a
+# shim on PATH correctly reads as "not installed".
+function is_installed() {
+    local path
+    path="$(command -v "$1" 2>/dev/null)" || return 1
+    [ -n "$path" ] || return 1
+    [ "$(readlink -f "$path")" != "$(readlink -f "$SELF")" ]
+}
+
+# Only ever removes our own symlink, never a real binary the user installed by
+# some other means.
+function remove_shim() {
+    local link="${SHIM_DIR}/$1"
+
+    if [ -L "$link" ] && [ "$(readlink -f "$link")" = "$(readlink -f "$SELF")" ]; then
+        rm -f "$link"
+    fi
+}
+
+function restore_shim() {
+    local link="${SHIM_DIR}/$1"
+
+    if [ ! -e "$link" ] && [ ! -L "$link" ]; then
+        ln -s "$SELF" "$link"
+    fi
+}
+
+# Exit codes: 0 accepted, 1 declined, 2 unable to ask.
+function confirm() {
+    local name="$1"
+    local label reply
+
+    label="$(harness_label "$name")"
+
+    if [ "$ASSUME_YES" -eq 1 ]; then
+        return 0
+    fi
+
+    if [ ! -t 0 ]; then
+        echo "✗ Not installing ${label} without confirmation: no terminal attached."
+        echo "  To install it non-interactively, run: install-harnesses --yes ${name}"
+        return 2
+    fi
+
+    read -r -p "Install ${label} now? [y/N] " reply
+    case "$reply" in
+        [yY]|[yY][eE][sS]) return 0 ;;
+        *) echo "Skipped ${label}." ; return 1 ;;
+    esac
+}
+
+# Registers the filesystem MCP server for Claude Code. This ran from entry.sh at
+# container startup back when Claude Code was preinstalled; user scope keeps it
+# working regardless of which directory the install was run from.
+function configure_claude_mcp() {
+    claude mcp add-json filesystem '{
+  "disabled": false,
+  "timeout": 60,
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/jovyan/work", "/home/jovyan/data-store"],
+  "autoApprove": ["read_file", "read_multiple_files", "write_file", "edit_file", "create_directory", "list_directory", "list_directory_with_sizes", "directory_tree", "move_file", "search_files", "get_file_info", "list_allowed_directories"]
+}' --scope user
+}
+
+function install_claude() {
+    echo "Installing Claude Code..."
+    remove_shim claude
+
+    if ! curl -fsSL https://claude.ai/install.sh | bash; then
+        echo "✗ Claude Code installation failed (check network access to claude.ai)"
+        restore_shim claude
+        return 1
+    fi
+
+    hash -r
+    if ! configure_claude_mcp; then
+        echo "ℹ Claude Code installed, but registering the filesystem MCP server failed"
+    fi
+
+    echo "✓ Installed Claude Code"
+}
+
+function install_agy() {
+    echo "Installing Antigravity CLI..."
+    remove_shim agy
+
+    if ! curl -fsSL https://antigravity.google/cli/install.sh | bash; then
+        echo "✗ Antigravity CLI installation failed (check network access to antigravity.google)"
+        restore_shim agy
+        return 1
+    fi
+
+    hash -r
+    echo "✓ Installed Antigravity CLI"
+}
+
+function install_harness() {
+    local name="$1"
+
+    if is_installed "$name"; then
+        echo "ℹ $(harness_label "$name") is already installed"
+        return 0
+    fi
+
+    confirm "$name"
+    case $? in
+        0) ;;
+        1) return 0 ;;
+        *) return 1 ;;
+    esac
+
+    case "$name" in
+        claude) install_claude ;;
+        agy)    install_agy ;;
+    esac
+}
+
+function show_status() {
+    local name
+
+    for name in "${HARNESSES[@]}"; do
+        if is_installed "$name"; then
+            echo "  ✓ ${name} — $(harness_label "$name") — installed"
+        else
+            echo "  ✗ ${name} — $(harness_label "$name") — not installed"
+        fi
+    done
+}
+
+# Invoked under a harness name: install it, then hand off to the real binary
+# with the caller's original arguments.
+function run_shim() {
+    local name="$1"
+    local target
+    shift
+
+    if is_installed "$name"; then
+        exec "$(command -v "$name")" "$@"
+    fi
+
+    show_banner
+    echo "$(harness_label "$name") is not installed."
+    echo
+    install_harness "$name"
+    hash -r
+
+    # Guards against re-exec'ing ourselves if the shim somehow survived.
+    if ! is_installed "$name"; then
+        echo
+        echo "✗ ${name} was not installed, so it cannot be run."
+        echo "  Install it later with: install-harnesses ${name}"
+        exit 1
+    fi
+
+    target="$(command -v "$name")"
+    echo
+    exec "$target" "$@"
+}
+
+case "$(basename "$0")" in
+    claude|agy)
+        run_shim "$(basename "$0")" "$@"
+        ;;
+esac
+
+targets=()
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -y|--yes)
+            ASSUME_YES=1
+            shift
+            ;;
+        -h|--help|help)
+            show_usage
+            exit 0
+            ;;
+        claude|agy)
+            targets+=("$1")
+            shift
+            ;;
+        all)
+            targets=("${HARNESSES[@]}")
+            shift
+            ;;
+        list)
+            show_banner
+            show_status
+            exit 0
+            ;;
+        *)
+            echo "Unknown command: $1"
+            show_usage
+            exit 1
+            ;;
+    esac
+done
+
+show_banner
+
+if [ ${#targets[@]} -eq 0 ]; then
+    show_status
+    echo
+    targets=("${HARNESSES[@]}")
+fi
+
+status=0
+for harness in "${targets[@]}"; do
+    install_harness "$harness" || status=1
+done
+
+exit $status

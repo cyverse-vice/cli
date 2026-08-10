@@ -102,21 +102,24 @@ ENV GCM_CREDENTIAL_STORE=cache
 # Copy scripts while still root and set permissions
 COPY entry.sh /bin
 COPY osn-mount.sh /usr/local/bin/
+COPY install-harnesses /usr/local/bin/
 RUN chmod +x /bin/entry.sh && \
-    chmod +x /usr/local/bin/osn-mount.sh
+    chmod +x /usr/local/bin/osn-mount.sh && \
+    chmod +x /usr/local/bin/install-harnesses
 
 USER jovyan
 
-# Install Claude Code and OpenAI Codex via npm
-# (npm install is preferred over claude.ai/install.sh for Docker builds)
+# Install OpenAI Codex via npm
 RUN npm config set prefix /home/jovyan/.npm-global && \
-    npm install -g @anthropic-ai/claude-code @openai/codex && \
+    npm install -g @openai/codex && \
     npm cache clean --force
 
-# Install Antigravity CLI (replaces deprecated Google Gemini CLI — deadline June 18 2026)
-# https://antigravity.google/blog/introducing-google-antigravity-cli
-# Binary: agy, installed to ~/.local/bin
-RUN curl -fsSL https://antigravity.google/cli/install.sh | bash
+# Claude Code and the Antigravity CLI are closed source, so they are installed
+# on demand rather than baked in. Shim their commands to the installer until the
+# real binaries replace it.
+RUN mkdir -p /home/jovyan/.local/bin && \
+    ln -s /usr/local/bin/install-harnesses /home/jovyan/.local/bin/claude && \
+    ln -s /usr/local/bin/install-harnesses /home/jovyan/.local/bin/agy
 
 # Install OpenCode (https://opencode.ai/) — --no-modify-path avoids shell detection hang in Docker
 RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
@@ -126,7 +129,9 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo '[ ! -z "$TERM" -a -r /etc/motd ] && /etc/motd' >> ~/.bashrc && \
     echo $'\n# upgrade GoCommands\nsudo gocmd upgrade > /dev/null' >> ~/.bashrc
 
-# set path for Go, NPM globals, OpenCode, and Antigravity CLI
+# set path for Go, NPM globals, OpenCode, and the on-demand harnesses
+# (.local/bin must stay first: it holds the shims and is where the Claude Code
+# and Antigravity installers place their binaries)
 ENV PATH="/home/jovyan/.local/bin:/home/jovyan/.npm-global/bin:/home/jovyan/.opencode/bin:/usr/local/go/bin:${PATH}"
 
 # set shell as bash and terminal as linux

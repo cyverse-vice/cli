@@ -18,10 +18,13 @@ Browser-based interactive terminal for use in [CyVerse Discovery Environment](ht
 This cloud shell environment includes:
 
 ### AI Development Tools
-- **Claude Code** - Anthropic AI coding assistant (`claude`)
-- **Gemini CLI** - Google AI CLI (`gemini`)
 - **OpenAI Codex** - OpenAI coding assistant (`codex`)
+- **OpenCode** - Open source coding agent (`opencode`)
 - **Node.js 20.x** - JavaScript runtime for AI tools
+
+Claude Code (`claude`) and the Antigravity CLI (`agy`) are closed source, so they
+are not preinstalled. Run `install-harnesses` to install either one, or just run
+`claude` or `agy` and the installer will offer to set it up for you.
 
 ### Development Tools
 - **GitHub CLI (`gh`)** - Command-line tool for GitHub operations
