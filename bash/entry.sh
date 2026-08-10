@@ -1,6 +1,6 @@
 #!/bin/bash
 # add irods config
-echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | envsubst > $HOME/.irods/irods_environment.json
+echo '{"irods_host": "swcacti1.unm.edu", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "swcactiZone"}' | envsubst > $HOME/.irods/irods_environment.json
 
 # Copy .gitconfig from volume mount (if it exists)
 if [ -f /data-store/iplant/home/$IPLANT_USER/.gitconfig ]; then
