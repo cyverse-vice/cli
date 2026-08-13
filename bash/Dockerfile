@@ -184,6 +184,10 @@ RUN printf '%s\n' 'if [ -f ~/.bashrc ]; then' '    . ~/.bashrc' 'fi' \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile && \
     echo "conda activate geospatial" >> /home/jovyan/.bash_profile
 
+# No CMD on purpose. entry.sh never reads "$@" -- it execs ttyd itself -- so a
+# CMD is dead weight here. It also muddies argv: the DE replaces the args with
+# the analysis's app parameters, so a `ttyd bash` CMD would leave "no parameter
+# set" looking just like a parameter whose value happens to be "ttyd". With no
+# CMD, argv is empty unless the DE supplied a parameter, which is what lets
+# entry.sh accept a bare parameter value.
 ENTRYPOINT ["bash", "/bin/entry.sh"]
-
-CMD ["ttyd", "bash"]

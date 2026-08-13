@@ -160,11 +160,19 @@ hook=""
 # being able to confirm from a real launch.
 echo "entry.sh args: $*" >> "$INIT_LOG"
 
+# Prefer --init-script, but accept a bare value: the DE only emits the flag
+# when the app parameter's "Argument option" field is filled in, and passes the
+# value alone otherwise. A bare value is unambiguous because this image
+# declares no CMD, so argv is empty unless the DE supplied a parameter.
+#
 # Shift one at a time. `shift 2` is a trap here: a parameter left blank in the
 # DE arrives as a bare trailing --init-script, and shifting past the end is a
 # no-op that spins forever.
 while [ $# -gt 0 ]; do
-  [ "$1" = "--init-script" ] && INIT_SCRIPT="${2:-}"
+  case "$1" in
+    --init-script) INIT_SCRIPT="${2:-}" ;;
+    *) [ -n "$INIT_SCRIPT" ] || INIT_SCRIPT="$1" ;;
+  esac
   shift
 done
 
