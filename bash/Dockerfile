@@ -166,13 +166,9 @@ RUN if [ -d /home/jovyan/work ]; then \
         mkdir -p /home/jovyan/scratch; \
     fi
 
-# activate base Python environment using mamba
+# create environment using mamba
 COPY environment.yml /home/jovyan/
 RUN mamba env create -f /home/jovyan/environment.yml
-
-# Activate the environment from ~/.bashrc, not ~/.bash_profile, so that it is
-# picked up by every interactive shell rather than only login shells.
-RUN echo "conda activate geospatial" >> /home/jovyan/.bashrc
 
 # tmux starts a login shell for each new window (ctrl-b c), and bash reads
 # ~/.bash_profile instead of ~/.bashrc for login shells. Sourcing ~/.bashrc here
@@ -181,8 +177,7 @@ RUN echo "conda activate geospatial" >> /home/jovyan/.bashrc
 # what `bash -lc` in a script or job launcher gets.
 RUN printf '%s\n' 'if [ -f ~/.bashrc ]; then' '    . ~/.bashrc' 'fi' \
     >> /home/jovyan/.bash_profile && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile && \
-    echo "conda activate geospatial" >> /home/jovyan/.bash_profile
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/jovyan/.bash_profile
 
 # No CMD on purpose. entry.sh never reads "$@" -- it execs ttyd itself -- so a
 # CMD is dead weight here. It also muddies argv: the DE replaces the args with
