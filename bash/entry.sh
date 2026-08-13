@@ -145,8 +145,10 @@ if [ -f "$HOME/.aws/credentials" ] && [ -f "$HOME/.aws/config" ]; then
 fi
 
 # Optional user init hook. The "User init script" app parameter reaches us as
-# `--init-script <irods-path>`; VICE_INIT_SCRIPT does the same when testing
-# this image outside the DE. Nothing runs unless one of them names a script.
+# `--init-script <basename>`, so that parameter's "Argument option" field must
+# be set to --init-script in the DE; leave it empty and only the bare value is
+# passed, which this deliberately ignores. VICE_INIT_SCRIPT does the same when
+# testing outside the DE. Nothing runs unless one of them names a script.
 # A hook is capped at a flat two minutes, deliberately not configurable: the
 # cap exists to protect the DE's readiness check, and a knob to raise it would
 # just be a knob to defeat it.
