@@ -145,12 +145,16 @@ ENV TERM=xterm
 # open port 7681 for ttyd
 EXPOSE 7681
 
-# set working directory - tmux takes the cwd of every window, including new
-# ones (ctrl-b c), from the session it starts in, so this lands users in $HOME
-WORKDIR /home/jovyan
+# Set the working directory to match the tool's setting in the DE, which has to
+# stay at /home/jovyan/data-store: the DE mounts the analysis's persistent
+# volume at the container's working directory, so pointing it at /home/jovyan
+# would mount a volume over the home directory and hide .bashrc, .bash_profile
+# and everything else this image installs. Landing users in $HOME is entry.sh's
+# job instead -- it does `cd "$HOME"` before exec, and tmux takes the cwd of
+# every window, including new ones (ctrl-b c), from the session it starts in.
+WORKDIR /home/jovyan/data-store
 
-# Configure tmux and create the iRODS and data store directories
-# (data-store was previously created implicitly by WORKDIR)
+# Configure tmux and create the iRODS directory
 RUN echo 'set-option -g status off' >> ~/.tmux.conf && \
     mkdir -p /home/jovyan/.irods /home/jovyan/data-store
 
