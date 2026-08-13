@@ -144,4 +144,55 @@ if [ -f "$HOME/.aws/credentials" ] && [ -f "$HOME/.aws/config" ]; then
   mount | grep "/osn/" | awk '{print "  - " $1 " -> " $3}' || echo "  No buckets currently mounted"
 fi
 
+# Optional user init hook. The "User init script" app parameter reaches us as
+# `--init-script <irods-path>`; VICE_INIT_SCRIPT does the same when testing
+# this image outside the DE. Nothing runs unless one of them names a script.
+# A hook is capped at a flat two minutes, deliberately not configurable: the
+# cap exists to protect the DE's readiness check, and a knob to raise it would
+# just be a knob to defeat it.
+INIT_LOG="$HOME/.vice-init.log"
+INIT_SCRIPT="${VICE_INIT_SCRIPT:-}"
+hook=""
+
+# Log argv: whether an app parameter actually reaches the container is worth
+# being able to confirm from a real launch.
+echo "entry.sh args: $*" >> "$INIT_LOG"
+
+# Shift one at a time. `shift 2` is a trap here: a parameter left blank in the
+# DE arrives as a bare trailing --init-script, and shifting past the end is a
+# no-op that spins forever.
+while [ $# -gt 0 ]; do
+  [ "$1" = "--init-script" ] && INIT_SCRIPT="${2:-}"
+  shift
+done
+
+if [ -n "$INIT_SCRIPT" ]; then
+  # The parameter names an iRODS path, so map it onto the CSI mount: inputs
+  # land at /data-store/input/<basename> and the user's iRODS home at
+  # /data-store/<zone>/home/<user>. The bare path covers local testing.
+  for candidate in \
+    "/data-store/input/$(basename "$INIT_SCRIPT")" \
+    "/data-store${INIT_SCRIPT}" \
+    "$INIT_SCRIPT"
+  do
+    [ -f "$candidate" ] && [ -r "$candidate" ] && hook="$candidate" && break
+  done
+
+  # Confine the hook to the data store. Checking mode bits would prove nothing:
+  # irodsfs synthesizes them from the CSI uid/gid attributes, not iRODS ACLs.
+  case "$(readlink -f "$hook" 2>/dev/null)" in
+    /data-store/*|"$HOME"/*) ;;
+    *) echo "init hook: no usable script for '$INIT_SCRIPT'" >> "$INIT_LOG"; hook="" ;;
+  esac
+fi
+
+if [ -n "$hook" ]; then
+  echo "Running user init hook: $hook (log $INIT_LOG)"
+  # `bash "$hook"` rather than `"$hook"`: the executable bit does not survive
+  # the data store. A child process rather than `source`: a sourced hook could
+  # clobber this script.
+  timeout --kill-after=10 120 bash "$hook" >> "$INIT_LOG" 2>&1 ||
+    echo "user init hook failed or timed out, continuing with defaults (see $INIT_LOG)"
+fi
+
 exec /usr/bin/tini -- ttyd -W tmux new -A -s ttyd bash
