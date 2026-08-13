@@ -167,15 +167,15 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -n "$INIT_SCRIPT" ]; then
-  # The parameter names an iRODS path, so map it onto the CSI mount: inputs
-  # land at /data-store/input/<basename> and the user's iRODS home at
-  # /data-store/<zone>/home/<user>. The bare path covers local testing.
+  # The DE passes the file's basename, and the iRODS CSI driver mounts any
+  # selected input at /data-store/input/<basename>, wherever in the data store
+  # the user picked it from. The bare path covers local testing.
   for candidate in \
     "/data-store/input/$(basename "$INIT_SCRIPT")" \
-    "/data-store${INIT_SCRIPT}" \
     "$INIT_SCRIPT"
   do
     [ -f "$candidate" ] && [ -r "$candidate" ] && hook="$candidate" && break
+    echo "init hook: tried $candidate" >> "$INIT_LOG"
   done
 
   # Confine the hook to the data store. Checking mode bits would prove nothing:
@@ -194,5 +194,13 @@ if [ -n "$hook" ]; then
   timeout --kill-after=10 120 bash "$hook" >> "$INIT_LOG" 2>&1 ||
     echo "user init hook failed or timed out, continuing with defaults (see $INIT_LOG)"
 fi
+
+# Start the shell in ~ regardless of the tool's working directory. That setting
+# has to stay at ~/data-store: the DE mounts the analysis's persistent volume
+# at the container's working directory, so pointing it at /home/jovyan would
+# mount a volume over the home directory and hide .bashrc, .bash_profile and
+# everything else the image ships. tmux takes the cwd of every window from the
+# session it starts in, so changing directory here is enough.
+cd "$HOME" || true
 
 exec /usr/bin/tini -- ttyd -W tmux new -A -s ttyd bash
