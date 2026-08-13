@@ -201,8 +201,15 @@ if [ -n "$hook" ]; then
   # `bash "$hook"` rather than `"$hook"`: the executable bit does not survive
   # the data store. A child process rather than `source`: a sourced hook could
   # clobber this script.
-  timeout --kill-after=10 120 bash "$hook" >> "$INIT_LOG" 2>&1 ||
-    echo "user init hook failed or timed out, continuing with defaults (see $INIT_LOG)"
+  timeout --kill-after=10 120 bash "$hook" >> "$INIT_LOG" 2>&1
+  status=$?
+  # tee, so the reason lands both in the pod log and in the log the user reads.
+  # 124 is timeout giving up; 137 is it following through with SIGKILL.
+  case "$status" in
+    0) ;;
+    124|137) echo "init hook: timed out after 120s and was killed, continuing with defaults" | tee -a "$INIT_LOG" ;;
+    *) echo "init hook: exited $status, continuing with defaults" | tee -a "$INIT_LOG" ;;
+  esac
 fi
 
 # Start the shell in ~ regardless of the tool's working directory. That setting
