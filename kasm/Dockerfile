@@ -1,14 +1,14 @@
 FROM kasmweb/terminal:1.17.0-rolling
 
 LABEL org.label-schema.name="CyVerse VICE CloudShell" \
-      org.label-schema.description="Built from KASM Terminal" \
-      org.label-schema.url="https://de.cyverse.org/apps" \
-      org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
-      org.label-schema.vendor="CyVerse" \
-      org.label-schema.schema-version="1.0.0"
+    org.label-schema.description="Built from KASM Terminal" \
+    org.label-schema.url="https://de.cyverse.org/apps" \
+    org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/cli" \
+    org.label-schema.vendor="CyVerse" \
+    org.label-schema.schema-version="1.0.0"
 
 USER root
-    
+
 ARG LOCAL_USER=kasm-user
 
 RUN apt-get update && \
@@ -19,24 +19,24 @@ RUN apt-get update && \
 # Install a few dependencies for goCommands, text editing, and monitoring instances
 RUN apt update && \
     apt install -y apt-transport-https \
-                apt-utils \
-                curl \
-                figlet \
-                gcc \
-                glances \
-                htop \
-                imagemagick \
-                libfreetype6-dev \
-                less \
-                libx11-dev \
-                lolcat   \ 
-                neofetch \
-                lsb-release \
-                neofetch \
-                pkg-config \
-                software-properties-common \
-                nano \
-                w3m-img
+    apt-utils \
+    curl \
+    figlet \
+    gcc \
+    glances \
+    htop \
+    imagemagick \
+    libfreetype6-dev \
+    less \
+    libx11-dev \
+    lolcat   \ 
+    neofetch \
+    lsb-release \
+    neofetch \
+    pkg-config \
+    software-properties-common \
+    nano \
+    w3m-img
 
 # Install GoCommands
 # https://learning.cyverse.org/ds/gocommands/
@@ -72,7 +72,7 @@ USER kasm-user
 
 # add iRODS iCommands to user profile as JSON
 RUN mkdir /home/kasm-user/.irods 
-RUN echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | envsubst > /home/kasm-user/.irods/irods_environment.json
+RUN echo '{"irods_host": "swcacti1.unm.edu", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "swcactiZone"}' | envsubst > /home/kasm-user/.irods/irods_environment.json
 
 # Install Miniforge and Mamba
 RUN cd && wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \

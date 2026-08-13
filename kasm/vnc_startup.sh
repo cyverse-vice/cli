@@ -2,12 +2,12 @@
 ### every exit != 0 fails the script
 set -e
 
-if [ -f /data-store/iplant/home/$IPLANT_USER/.gitconfig ]; then
-  cp /data-store/iplant/home/$IPLANT_USER/.gitconfig ~/
+if [ -f /data-store/swcactiZone/home/$IPLANT_USER/.gitconfig ]; then
+  cp /data-store/swcactiZone/home/$IPLANT_USER/.gitconfig ~/
 fi
 
-if [ -d /data-store/iplant/home/$IPLANT_USER/.ssh ]; then
-  cp -r /data-store/iplant/home/$IPLANT_USER/.ssh ~/
+if [ -d /data-store/swcactiZone/home/$IPLANT_USER/.ssh ]; then
+  cp -r /data-store/swcactiZone/home/$IPLANT_USER/.ssh ~/
 fi
 
 no_proxy="localhost,127.0.0.1"
