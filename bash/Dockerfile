@@ -1,11 +1,11 @@
 FROM quay.io/jupyter/minimal-notebook:latest
 
 LABEL org.label-schema.name="CyVerse VICE Cloud Shell" \
-      org.label-schema.description="Built from Ubuntu 24.04 w/ MiniConda3" \
-      org.label-schema.url="https://cyverse.org" \
-      org.label-schema.vcs-url="https://github.com/cyverse-vice/cli" \
-      org.label-schema.vendor="CyVerse" \
-      org.label-schema.schema-version="1.0.0"
+    org.label-schema.description="Built from Ubuntu 24.04 w/ MiniConda3" \
+    org.label-schema.url="https://cyverse.org" \
+    org.label-schema.vcs-url="https://github.com/cyverse-vice/cli" \
+    org.label-schema.vendor="CyVerse" \
+    org.label-schema.schema-version="1.0.0"
 
 USER root
 
@@ -23,7 +23,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Tini
-ENV TZ=America/Phoenix
+ENV TZ=America/Denver
 ENV LANG=C.UTF-8 
 ENV LC_ALL="en_US.UTF-8"
 ENV PATH=/opt/conda/bin:$PATH
@@ -161,9 +161,9 @@ RUN echo 'set-option -g status off' >> ~/.tmux.conf && \
 # The Jupyter base image ships a ~/work directory. Rename it to ~/scratch to
 # make clear that it is temporary storage and is not backed by the data store.
 RUN if [ -d /home/jovyan/work ]; then \
-        mv /home/jovyan/work /home/jovyan/scratch; \
+    mv /home/jovyan/work /home/jovyan/scratch; \
     else \
-        mkdir -p /home/jovyan/scratch; \
+    mkdir -p /home/jovyan/scratch; \
     fi
 
 # create environment using mamba
